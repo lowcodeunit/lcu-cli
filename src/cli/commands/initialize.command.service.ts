@@ -19,7 +19,7 @@ export class InitializeCommandService extends BaseCommandService {
             .command('initialize')
             .alias('init')
             .description('Initialize location as an LCU compatible directory.')
-            .option('-r|--repository <repo>', 'The Template repository path to use as default for all projects (default: smart-matrix/lcu-cli-templates-core).')
+            .option('-r|--repository <repo>', 'The Template repository path to use as default for all projects (default: lowcodeunit-devkit/lcu-cli-templates-core).')
             .option('-t|--temp-path <temp>', `The temporary files path to use (default: {{userHomePath}}\\smart-matrix\\lcu).`)
             .action(async (options: any) => {
                 if (await this.isLcuInitialized())
@@ -29,7 +29,7 @@ export class InitializeCommandService extends BaseCommandService {
 
                     var context = {
                         projectsPath: 'projects',
-                        repo: options.repository || 'lowcodeunit/lcu-cli-templates-core',
+                        repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
                         tempPath: options.tempPath || '{{userHomePath}}\\smart-matrix\\lcu'
                     };
 

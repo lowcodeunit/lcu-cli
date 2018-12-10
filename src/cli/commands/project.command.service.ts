@@ -50,15 +50,9 @@ export class ProjectCommandService extends BaseCommandService {
 
                         context = await this.mergeObjects(context, answers);
 
-                        var err = await this.ensureProject(context);
+                        await this.processTemplates(context);
 
-                        if (!err) {
-                            await this.processTemplates(context);
-
-                            this.Ora.succeed(`Completed setup for project ${context.projectName}.`);
-                        } else {
-                            this.Ora.fail(err);
-                        }
+                        this.Ora.succeed(`Completed setup for project ${context.projectName}.`);
                     } catch (err) {
                         this.Ora.fail(`Issue establishing project: \r\n${err}`);
 
@@ -83,40 +77,6 @@ export class ProjectCommandService extends BaseCommandService {
         }
 
         return projectName;
-    }
-
-    protected async ensureProject(context: any) {
-        // var templatesRepoPath = this.pathJoin(context.tempPath, 'repos', context.repo);
-
-        // var cliConfig = await this.loadCLIConfig(templatesRepoPath);
-
-        // if (!lcuConfig.projects)
-        //     lcuConfig.projects = {};
-
-        // if (lcuConfig.projects[context.projectName])
-        //     return 'Project already exists';
-
-        // lcuConfig.projects[context.projectName] = {
-        //     name: context.projectName,
-        //     source: `./${context.projectsPath}/${context.projectName}`,
-        //     target: `./dist/${context.projectsPath}`,
-        //     template: context.template
-        // };
-
-        // var lcuCfgTemp = await this.loadLCUConfigTemplate(templatesRepoPath, cliConfig.Projects.Root, this.SysPath);
-
-        // lcuConfig = await this.mergeLcuFiles(lcuConfig, lcuCfgTemp, context);
-
-        // lcuCfgTemp = await this.loadLCUConfigTemplate(templatesRepoPath, cliConfig.Projects.Root, context.template, this.SysPath);
-
-        // lcuConfig = await this.mergeLcuFiles(lcuConfig, lcuCfgTemp, context);
-
-        // if (!lcuConfig.DefaultProject)
-        //     lcuConfig.DefaultProject = context.projectName;
-
-        // await this.saveLCUConfig(lcuConfig);
-
-        return null;
     }
 
     protected async establishTemplatesRepo(repoTempPath: string, repo: string) {

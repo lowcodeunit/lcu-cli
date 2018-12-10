@@ -8,7 +8,7 @@
   },
   "scripts": {
     "deploy": "npm version patch && npm run build && npm run deploy:lib",
-    "deploy:lib": "npm publish ./lib --access public",
+    "deploy:lib": "npm publish ./ --access public",
     "create": "npm run build && npm run test",
     "build": "tsc -p .",
     "build:dev": "tsc -w",

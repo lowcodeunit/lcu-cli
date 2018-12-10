@@ -36,7 +36,7 @@ export class ProjectCommandService extends BaseCommandService {
                         projectName: projectName,
                         projectsPath: 'projects',
                         template: null,
-                        with: options.with || false,
+                        with: options.with || 'Default',
                         repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
                         tempPath: '{{userHomePath}}\\smart-matrix\\lcu'
                     };

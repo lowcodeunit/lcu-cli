@@ -38,7 +38,7 @@ export class InitializeCommandService extends BaseCommandService {
 
                         context = Object.assign(context, answers);
 
-                        await this.processTemplates(context);
+                        // await this.processTemplates(context);
 
                         this.Ora.succeed('Completed initialization of the LCU');
 

@@ -1,3 +1,5 @@
+import Chalk from 'chalk';
+import { AsyncHelpers } from './../../helpers/3rdparty-async';
 import { Logger } from './../../logging/logger';
 import { BaseCommandService } from './BaseCommandService';
 import { Command } from 'commander'
@@ -19,10 +21,11 @@ export class ProjectCommandService extends BaseCommandService {
             .command('project [project-name]')
             .alias('proj')
             .description('Initialize an LCU project from core templates or custom template directories.')
+            .option('-r|--repository <repo>', 'The Template repository path to use as default for all projects (default: lowcodeunit-devkit/lcu-cli-templates-core).')
             .option('-p|--projects-path <path>', 'The path to use for projects working directory (default: projects).')
             .action(async (projectName: string, options: any) => {
-                if (!(await this.isLcuInitialized())) {
-                    this.establishSectionHeader('LCU Is Not Yet Initialized', 'yellow');
+                if (await this.isLcuInitialized()) {
+                    this.establishSectionHeader('LCU Already Initialized', 'yellow');
 
                     this.establishNextSteps(['Initialize the LCU:', 'lcu init'])
                 } else {
@@ -31,13 +34,19 @@ export class ProjectCommandService extends BaseCommandService {
                     var context = {
                         projectName: projectName,
                         projectsPath: 'projects',
-                        template: null
+                        template: null,
+                        repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
+                        tempPath: '{{userHomePath}}\\smart-matrix\\lcu'
                     };
-
+                    
                     context.projectName = await this.ensureProjectName(context.projectName);
 
                     try {
-                        var answers = await this.processTemplateInquiries(context);
+                        var answers = await this.establishTemplatesRepo(this.pathJoin(context.tempPath, 'repos', context.repo), context.repo);
+
+                        context = Object.assign(context, answers);
+
+                        answers = await this.processTemplateInquiries(context);
 
                         context = await this.mergeObjects(context, answers);
 
@@ -77,39 +86,61 @@ export class ProjectCommandService extends BaseCommandService {
     }
 
     protected async ensureProject(context: any) {
-        var lcuConfig = await this.loadLCUConfig();
+        // var templatesRepoPath = this.pathJoin(context.tempPath, 'repos', context.repo);
 
-        var templatesRepoPath = this.pathJoin(lcuConfig.environment.tempFiles, 'repos', lcuConfig.templates.repository);
+        // var cliConfig = await this.loadCLIConfig(templatesRepoPath);
 
-        var cliConfig = await this.loadCLIConfig(templatesRepoPath);
+        // if (!lcuConfig.projects)
+        //     lcuConfig.projects = {};
 
-        if (!lcuConfig.projects)
-            lcuConfig.projects = {};
+        // if (lcuConfig.projects[context.projectName])
+        //     return 'Project already exists';
 
-        if (lcuConfig.projects[context.projectName])
-            return 'Project already exists';
+        // lcuConfig.projects[context.projectName] = {
+        //     name: context.projectName,
+        //     source: `./${context.projectsPath}/${context.projectName}`,
+        //     target: `./dist/${context.projectsPath}`,
+        //     template: context.template
+        // };
 
-        lcuConfig.projects[context.projectName] = {
-            name: context.projectName,
-            source: `./${context.projectsPath}/${context.projectName}`,
-            target: `./dist/${context.projectsPath}`,
-            template: context.template
-        };
+        // var lcuCfgTemp = await this.loadLCUConfigTemplate(templatesRepoPath, cliConfig.Projects.Root, this.SysPath);
 
-        var lcuCfgTemp = await this.loadLCUConfigTemplate(templatesRepoPath, cliConfig.Projects.Root, this.SysPath);
+        // lcuConfig = await this.mergeLcuFiles(lcuConfig, lcuCfgTemp, context);
 
-        lcuConfig = await this.mergeLcuFiles(lcuConfig, lcuCfgTemp, context);
+        // lcuCfgTemp = await this.loadLCUConfigTemplate(templatesRepoPath, cliConfig.Projects.Root, context.template, this.SysPath);
 
-        lcuCfgTemp = await this.loadLCUConfigTemplate(templatesRepoPath, cliConfig.Projects.Root, context.template, this.SysPath);
+        // lcuConfig = await this.mergeLcuFiles(lcuConfig, lcuCfgTemp, context);
 
-        lcuConfig = await this.mergeLcuFiles(lcuConfig, lcuCfgTemp, context);
+        // if (!lcuConfig.DefaultProject)
+        //     lcuConfig.DefaultProject = context.projectName;
 
-        if (!lcuConfig.DefaultProject)
-            lcuConfig.DefaultProject = context.projectName;
-
-        await this.saveLCUConfig(lcuConfig);
+        // await this.saveLCUConfig(lcuConfig);
 
         return null;
+    }
+
+    protected async establishTemplatesRepo(repoTempPath: string, repo: string) {
+        return new Promise<{}>(async (resolve, reject) => {
+            var ora = this.Ora.start(`Loading Templates Repository '${repo}'`);
+
+            await AsyncHelpers.rimraf(repoTempPath).catch(err => {
+                ora.fail(`Issue cleaning temp path @ '${Chalk.yellow(repoTempPath)}': ${Chalk.red(err)}`);
+
+                process.exit(1);
+            });
+
+            await AsyncHelpers.downloadGit(repo, repoTempPath).catch((err) => {
+                ora.fail(`Template loading failed with: \n\t${Chalk.red(err)}`);
+
+                process.exit(1);
+            });
+
+            ora.succeed(`Loaded Templates to '${repoTempPath}'`);
+
+            var answers = this.inquir(repoTempPath);
+
+            resolve(answers);
+        });
     }
 
     protected async mergeLcuFiles(lcuConfig: any, lcuConfigTemplate: string, context: any) {
@@ -121,9 +152,7 @@ export class ProjectCommandService extends BaseCommandService {
     }
 
     protected async processTemplateInquiries(context: any) {
-        var lcuConfig = await this.loadLCUConfig();
-
-        var templatesRepoPath = this.pathJoin(lcuConfig.environment.tempFiles, 'repos', lcuConfig.templates.repository);
+        var templatesRepoPath = this.pathJoin(context.tempPath, 'repos', context.repo);
 
         var cliConfig = await this.loadCLIConfig(templatesRepoPath);
 
@@ -157,28 +186,16 @@ export class ProjectCommandService extends BaseCommandService {
     }
 
     protected async processTemplates(context: any) {
-        var lcuConfig = await this.loadLCUConfig();
-
-        var templatesRepoPath = this.pathJoin(lcuConfig.environment.tempFiles, 'repos', lcuConfig.templates.repository);
+        var templatesRepoPath = this.pathJoin(context.tempPath, 'repos', context.repo);
 
         var cliConfig = await this.loadCLIConfig(templatesRepoPath);
 
-        var projectConfig = lcuConfig[context.projectsPath][context.projectName];
+        var source = this.pathJoin(templatesRepoPath, cliConfig.Projects.Root, context.template);
 
-        var ora = this.Ora.start(`Starting scaffolding from ${projectConfig.template} project template...`);
-
-        var source = this.pathJoin(templatesRepoPath, cliConfig.Projects.Root, projectConfig.template);
-
-        var target = this.pathJoin(projectConfig.source);
-
-        await this.processTemplateCommands(source, target, context);
-
-        await this.compileTemplatesInDirectory(source, target, context);
-
-        ora.succeed(`Completed scaffolding of the ${projectConfig.template} project.`);
+        await this.processTemplateCommands(source, context);
     }
 
-    protected async processTemplateCommands(templateSourcePath: string, targetPath: string, context: any) {
+    protected async processTemplateCommands(templateSourcePath: string, context: any) {
         var ora = this.Ora.start(`Loading ${context.template} commands ...`);
 
         var commandsFile = await this.compileTemplateFromPath(context, this.pathJoin(templateSourcePath, this.SysPath, 'commands.json'));
@@ -190,37 +207,45 @@ export class ProjectCommandService extends BaseCommandService {
         await this.processNextCommand(commands, context);
     }
 
-    protected async processNextCommand(commands: string[], context: any) {
-        if (commands && commands.length > 0) {
-            var command = commands.shift();
+    protected processNextCommand(commands: string[], context: any): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (commands && commands.length > 0) {
+                var command = commands.shift();
+    
+                var ora = this.Ora.start(`Executing ${context.template} command: ${command}`);
+    
+                var proc = exeq(command)
+    
+                proc.q.on('stdout', (data) => {
+                    // Logger.Basic(data);
+                });
+    
+                proc.q.on('stderr', (data) => {
+                    Logger.Basic(data);
+                });
+    
+                proc.q.on('killed', (reason) => {
+                    ora.fail(`Command execution failed for ${command}: ${reason}`);
+                });
+    
+                proc.q.on('done', async () => {
+                    ora.succeed(`Successfully executed command: ${command}`);
+    
+                    await this.processNextCommand(commands, context);
+                    
+                    resolve();
+                });
+    
+                proc.q.on('failed', () => {
+                    ora.fail(`Failed execution of command: ${command}`);
 
-            var ora = this.Ora.start(`Executing ${context.template} command: ${command}`);
+                    reject();
+                });
+            } else {
+                this.Ora.succeed(`All commands have been processed for template ${context.template}`);
 
-            var proc = exeq(command)
-
-            proc.q.on('stdout', (data) => {
-                // Logger.Basic(data);
-            });
-
-            proc.q.on('stderr', (data) => {
-                Logger.Basic(data);
-            });
-
-            proc.q.on('killed', (reason) => {
-                ora.fail(`Command execution failed for ${command}: ${reason}`);
-            });
-
-            proc.q.on('done', async () => {
-                ora.succeed(`Successfully executed command: ${command}`);
-
-                await this.processNextCommand(commands, context)
-            });
-
-            proc.q.on('failed', () => {
-                ora.fail(`Failed execution of command: ${command}`);
-            });
-        } else {
-            this.Ora.succeed(`All commands have been processed for template ${context.template}`)
-        }
+                resolve();
+            }
+        });
     }
 }

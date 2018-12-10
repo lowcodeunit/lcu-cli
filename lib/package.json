@@ -1,6 +1,6 @@
 {
     "name": "@lowcodeunit/lcu-cli",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "description": "This is the home of the LCU DevKit and the LCU CLI code.",
     "main": "./src/lcu-cli.js",
     "bin": {
@@ -8,7 +8,7 @@
     },
     "scripts": {
         "deploy": "npm version patch && npm run build && npm run deploy:lib",
-        "deploy:lib": "npm publish ./ --access public",
+        "deploy:lib": "npm publish ./lib --access public",
         "create": "npm run build && npm run test",
         "build": "tsc -p .",
         "build:dev": "tsc -w",

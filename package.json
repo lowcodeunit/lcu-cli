@@ -1,5 +1,5 @@
 {
-  "name": "@smart-matrix/lcu-cli",
+  "name": "@lowcodeunit/lcu-cli",
   "version": "0.0.9",
   "description": "This is the home of the LCU DevKit and the LCU CLI code.",
   "main": "./lib/lcu-cli.js",

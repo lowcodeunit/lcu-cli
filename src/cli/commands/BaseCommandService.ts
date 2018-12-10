@@ -5,8 +5,8 @@ import { Logger } from './../../logging/logger';
 import { Command } from 'commander';
 import inquirer, { Questions } from 'inquirer';
 import handlebars from 'handlebars';
-import fs from 'fs-extra';
-import path from 'path';
+import { ensureDir, readdir, stat, writeFile, readFile, writeJson } from 'fs-extra';
+import { join } from 'path';
 import Ora from 'ora';
 import Chalk from 'chalk';
 import userHome from 'user-home';
@@ -59,9 +59,9 @@ export abstract class BaseCommandService {
     }
 
     protected async compileTemplatesInDirectory(source: string, target: string, context: any) {
-        await fs.ensureDir(target);
+        await ensureDir(target);
 
-        var contents = await fs.readdir(source);
+        var contents = await readdir(source);
 
         contents.forEach(async (content) => {
             if (content != this.SysPath) {
@@ -69,14 +69,14 @@ export abstract class BaseCommandService {
 
                 var tgtPath = this.pathJoin(target, content);
 
-                var srcStats = await fs.stat(srcPath);
+                var srcStats = await stat(srcPath);
 
                 if (srcStats.isDirectory()) {
                     await this.compileTemplatesInDirectory(srcPath, tgtPath, context);
                 } else {
                     var compiled = await this.compileTemplateFromPath(context, srcPath);
                     
-                    await fs.writeFile(tgtPath, compiled);
+                    await writeFile(tgtPath, compiled);
                 }
             }
         });
@@ -129,7 +129,7 @@ export abstract class BaseCommandService {
 
     protected async isLcuInitialized() {
         try {
-            await fs.stat('lcu.json');
+            await stat('lcu.json');
 
             return true;
         } catch (err) {
@@ -166,7 +166,7 @@ export abstract class BaseCommandService {
     }
 
     protected async loadFile(file: string) {
-        var fileContent = await fs.readFile(file);
+        var fileContent = await readFile(file);
 
         var content = fileContent.toString('utf8');
 
@@ -202,10 +202,10 @@ export abstract class BaseCommandService {
     }
 
     protected pathJoin(...paths: string[]) {
-        return path.join(...paths).replace('{{userHomePath}}', this.userHomePath);
+        return join(...paths).replace('{{userHomePath}}', this.userHomePath);
     }
 
     protected async saveLCUConfig(lcuConfig: any) {
-        await fs.writeJson('lcu.json', lcuConfig, { spaces: '\t' });
+        await writeJson('lcu.json', lcuConfig, { spaces: '\t' });
     }
 }

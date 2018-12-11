@@ -23,7 +23,7 @@ export class ProjectCommandService extends BaseCommandService {
             .description('Initialize an LCU project from core templates or custom template directories.')
             .option('-r|--repository <repo>', 'The Template repository path to use as default for all projects (default: lowcodeunit-devkit/lcu-cli-templates-core).')
             .option('-p|--projects-path <path>', 'The path to use for projects working directory (default: projects).')
-            .option('-w|--with <with>', 'The description of what to initialize the libray with...  Blank|Default|Solution|PageElement|SPE (default: Default).')
+            .option('-w|--initWith <initWith>', 'The description of what to initialize the libray with...  Blank|Default|Solution|PageElement|SPE (default: Default).')
             .action(async (projectName: string, options: any) => {
                 if (await this.isLcuInitialized()) {
                     this.establishSectionHeader('LCU Already Initialized', 'yellow');
@@ -36,7 +36,7 @@ export class ProjectCommandService extends BaseCommandService {
                         projectName: projectName,
                         projectsPath: 'projects',
                         template: null,
-                        with: options.with || 'Default',
+                        initWith: options.initWith || 'Default',
                         repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
                         tempPath: '{{userHomePath}}\\smart-matrix\\lcu'
                     };

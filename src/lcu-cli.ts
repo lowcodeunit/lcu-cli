@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-import './sys/pollyfills';
-
 import { Logger } from './logging/logger';
 import { LowCodeUnityCLIService } from './cli/lcu-cli.service';
 import { ICommandService } from './cli/commands/ICommandService';

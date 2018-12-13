@@ -1,7 +1,9 @@
 import { LCUOra, LCUColor } from './ICommandService';
 import { Command } from 'commander';
 import { Questions } from 'inquirer';
+import { LCUConfig } from '../core/lcu-config';
 export declare abstract class BaseCommandService {
+    protected readonly tempFiles: string;
     protected readonly userHomePath: string;
     protected readonly Ora: LCUOra;
     SysPath: string;
@@ -18,7 +20,7 @@ export declare abstract class BaseCommandService {
     protected isLcuInitialized(): Promise<boolean>;
     protected jsonCleanup(value: string): string;
     protected loadCLIConfig(rootPath?: string): any;
-    protected loadLCUConfig(): Promise<any>;
+    protected loadLCUConfig(): Promise<LCUConfig>;
     protected loadLCUConfigTemplate(...pathParts: string[]): Promise<string>;
     protected loadFile(file: string): Promise<string>;
     protected loadJS(file: string): Promise<any>;
@@ -26,5 +28,7 @@ export declare abstract class BaseCommandService {
     protected loadTemplateInquirerQuestions(rootPath: string): Promise<any>;
     protected mergeObjects(root: any, merged: any): Promise<any>;
     protected pathJoin(...paths: string[]): string;
+    protected processTemplateCommands(templateSourcePath: string, context: any): Promise<void>;
+    protected processNextCommand(commands: string[], context: any): Promise<void>;
     protected saveLCUConfig(lcuConfig: any): Promise<void>;
 }

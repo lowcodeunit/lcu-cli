@@ -20,7 +20,7 @@ export class InitializeCommandService extends BaseCommandService {
             .alias('init')
             .description('Initialize location as an LCU compatible directory.')
             .option('-r|--repository <repo>', 'The Template repository path to use as default for all projects (default: lowcodeunit-devkit/lcu-cli-templates-core).')
-            .option('-t|--temp-path <temp>', `The temporary files path to use (default: {{userHomePath}}\\smart-matrix\\lcu).`)
+            .option('-p|--projects-path <path>', 'The path to use for projects working directory (default: projects).')
             .action(async (options: any) => {
                 if (await this.isLcuInitialized())
                     this.establishSectionHeader('LCU Already Initialized', 'yellow');
@@ -29,16 +29,19 @@ export class InitializeCommandService extends BaseCommandService {
 
                     var context = {
                         projectsPath: 'projects',
-                        repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
-                        tempPath: options.tempPath || '{{userHomePath}}\\smart-matrix\\lcu'
+                        repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core'
                     };
 
                     try {
-                        var answers = await this.establishTemplatesRepo(this.pathJoin(context.tempPath, 'repos', context.repo), context.repo);
+                        var repoTempPath = this.pathJoin(this.tempFiles, 'repos', context.repo);
+
+                        await this.establishTemplatesRepo(repoTempPath, context.repo);
+
+                        var answers = this.inquir(this.pathJoin(repoTempPath, 'initialize'));
 
                         context = Object.assign(context, answers);
 
-                        // await this.processTemplates(context);
+                        await this.processTemplates(context, 'initialize');
 
                         this.Ora.succeed('Completed initialization of the LCU');
 
@@ -61,33 +64,29 @@ export class InitializeCommandService extends BaseCommandService {
                 ora.fail(`Issue cleaning temp path @ '${Chalk.yellow(repoTempPath)}': ${Chalk.red(err)}`);
 
                 process.exit(1);
+
+                reject();
             });
 
             await AsyncHelpers.downloadGit(repo, repoTempPath).catch((err) => {
                 ora.fail(`Template loading failed with: \n\t${Chalk.red(err)}`);
 
                 process.exit(1);
+
+                reject();
             });
 
             ora.succeed(`Loaded Templates to '${repoTempPath}'`);
 
-            var answers = this.inquir(repoTempPath);
-
-            resolve(answers);
+            resolve();
         });
     }
 
-    protected async processTemplates(context: any) {
-        var ora = this.Ora.start('Started creation of LCU config file...');
+    protected async processTemplates(context: any, subPath: string) {
+        var templatesRepoPath = this.pathJoin(this.tempFiles, 'repos', context.repo);
 
-        var lcuFile = await this.loadLCUConfigTemplate(context.tempPath, 'repos', context.repo, this.SysPath);
+        var source = this.pathJoin(templatesRepoPath, subPath);
 
-        lcuFile = await this.compileTemplate(lcuFile, context);
-
-        var lcuConfig = JSON.parse(lcuFile);
-
-        await this.saveLCUConfig(lcuConfig);
-
-        ora.succeed('Completed creation of the LCU config file.');
+        await this.processTemplateCommands(source, context);
     }
 }

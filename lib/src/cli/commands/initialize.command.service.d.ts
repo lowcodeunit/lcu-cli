@@ -4,5 +4,5 @@ export declare class InitializeCommandService extends BaseCommandService {
     constructor();
     Setup(program: Command): Promise<Command>;
     protected establishTemplatesRepo(repoTempPath: string, repo: string): Promise<{}>;
-    protected processTemplates(context: any): Promise<void>;
+    protected processTemplates(context: any, subPath: string): Promise<void>;
 }

@@ -12,12 +12,19 @@ import Chalk from 'chalk';
 import userHome from 'user-home';
 import clear from 'clear';
 import _ from 'lodash';
+import exeq from 'exeq';
+import { LCUConfig } from '../core/lcu-config';
 
 const defaultChalkColor: LCUColor = 'blue';
 
 export abstract class BaseCommandService {
     //  Constants
+
     //  Fields
+    protected get tempFiles(): string {
+        return '{{userHomePath}}\\smart-matrix\\lcu';
+    }
+
     protected get userHomePath(): string {
         return userHome;
     }
@@ -149,13 +156,13 @@ export abstract class BaseCommandService {
         } else {
             var lcuConfig = await this.loadLCUConfig();
 
-            var templatesRepoPath = this.pathJoin(lcuConfig.environment.tempFiles, 'repos', lcuConfig.templates.repository);
+            var templatesRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository);
 
             return await this.loadCLIConfig(templatesRepoPath);
         }
     }
 
-    protected async loadLCUConfig() {
+    protected async loadLCUConfig(): Promise<LCUConfig> {
         return await this.loadJSON('lcu.json');
     }
 
@@ -203,6 +210,60 @@ export abstract class BaseCommandService {
 
     protected pathJoin(...paths: string[]) {
         return join(...paths).replace('{{userHomePath}}', this.userHomePath);
+    }
+
+    protected async processTemplateCommands(templateSourcePath: string, context: any) {
+        var ora = this.Ora.start(`Loading commands ...`);
+
+        var commandsFile = await this.compileTemplateFromPath(context, this.pathJoin(templateSourcePath, this.SysPath, 'commands.json'));
+
+        var commands = <string[]>JSON.parse(commandsFile);
+
+        ora.succeed(`Loaded commands`);
+
+        await this.processNextCommand(commands, context);
+    }
+
+    protected processNextCommand(commands: string[], context: any): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (commands && commands.length > 0) {
+                var command = commands.shift();
+    
+                var ora = this.Ora.start(`Executing command: ${command}`);
+    
+                var proc = exeq(command)
+    
+                proc.q.on('stdout', (data) => {
+                    // Logger.Basic(data);
+                });
+    
+                proc.q.on('stderr', (data) => {
+                    Logger.Basic(data);
+                });
+    
+                proc.q.on('killed', (reason) => {
+                    ora.fail(`Command execution failed for ${command}: ${reason}`);
+                });
+    
+                proc.q.on('done', async () => {
+                    ora.succeed(`Successfully executed command: ${command}`);
+    
+                    await this.processNextCommand(commands, context);
+                    
+                    resolve();
+                });
+    
+                proc.q.on('failed', () => {
+                    ora.fail(`Failed execution of command: ${command}`);
+
+                    reject();
+                });
+            } else {
+                this.Ora.succeed(`All commands have been processed for template`);
+
+                resolve();
+            }
+        });
     }
 
     protected async saveLCUConfig(lcuConfig: any) {

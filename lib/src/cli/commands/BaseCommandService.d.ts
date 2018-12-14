@@ -15,6 +15,7 @@ export declare abstract class BaseCommandService {
     protected compileTemplatesInDirectory(source: string, target: string, context: any): Promise<void>;
     protected establishNextSteps(steps: string[], color?: LCUColor): Promise<void>;
     protected establishSectionHeader(title: string, color?: LCUColor, showHeader?: boolean, length?: number): Promise<void>;
+    protected ensureInquired(value: string, propName: string): Promise<string>;
     protected establishHeader(): Promise<void>;
     protected inquir(questions: Questions<{}> | string, errMsg?: string, exitOnError?: boolean): Promise<void | {}>;
     protected isLcuInitialized(): Promise<boolean>;

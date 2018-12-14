@@ -39,7 +39,7 @@ export class ElementCommandService extends BaseCommandService {
                     
                     context.name = await this.ensureName(context.name);
                     
-                    context.projectName = this.ensureInquired(context.projectName, 'projectName');
+                    context.projectName = await this.ensureInquired(context.projectName, 'projectName');
 
                     try {
                         var lcuConfig = await this.loadLCUConfig();
@@ -70,7 +70,7 @@ export class ElementCommandService extends BaseCommandService {
 
     //  Helpers
     protected async ensureName(name: string) {
-        return this.ensureInquired(name, 'name');
+        return await this.ensureInquired(name, 'name');
     }
 
     protected async processTemplateInquiries(templatesRepoPath: string, context: any) {

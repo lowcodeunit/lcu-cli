@@ -30,7 +30,7 @@ export class ProjectCommandService extends BaseCommandService {
                     var context: any = {
                         projectName: projectName,
                         template: null,
-                        initWith: options.initWith || 'Default'
+                        initWith: options.initWith || 'Element'
                     };
                     
                     context.projectName = await this.ensureProjectName(context.projectName);

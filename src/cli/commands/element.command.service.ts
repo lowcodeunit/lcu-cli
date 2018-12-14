@@ -21,6 +21,7 @@ export class ElementCommandService extends BaseCommandService {
             .alias('el')
             .description('Initialize an LCU Element from core templates.')
             .option('-p|--project <project>', 'The project to add the Element to.')
+            .option('-e|--export <export>', 'The export file within a project to add the Element to.')
             .option('--path <path>', 'The path within a project to add the Element to.')
             .action(async (name: string, options: any) => {
                 if (!(await this.isLcuInitialized())) {
@@ -33,6 +34,7 @@ export class ElementCommandService extends BaseCommandService {
                     var context: any = {
                         name: name,
                         path: options.path || 'src/lib',
+                        export: options.export || 'src/lcu.api.ts',
                         projectName: options.project,
                         template: null
                     };

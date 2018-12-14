@@ -114,6 +114,22 @@ export abstract class BaseCommandService {
 
         Logger.Basic(Chalk[color](`${outer}${inner}  ${title}  ${inner}${outer}`));
     }
+    
+    protected async ensureInquired(value: string, propName: string) {
+        while (!value) {
+            var answs: any = await this.inquir([
+                {
+                    type: 'input',
+                    name: propName,
+                    message: `What is the ${propName}?`
+                }
+            ], `Issue loading ${propName}`);
+
+            value = answs[propName];
+        }
+
+        return value;
+    }
 
     protected async establishHeader() {
         this.clear();

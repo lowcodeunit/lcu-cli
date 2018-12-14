@@ -36,18 +36,18 @@ export class ElementCommandService extends BaseCommandService {
                         path: options.path || 'src/lib',
                         export: options.export || 'src/lcu.api.ts',
                         projectName: options.project,
-                        template: null
+                        template: options.template || null
                     };
-                    
+
                     context.name = await this.ensureName(context.name);
-                    
+
                     context.projectName = await this.ensureInquired(context.projectName, 'projectName');
 
                     try {
                         var lcuConfig = await this.loadLCUConfig();
-                        
+
                         var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'element')
-                        
+
                         var answers = await this.inquir(templateRepoPath);
 
                         context = await this.mergeObjects(context, answers);
@@ -55,8 +55,6 @@ export class ElementCommandService extends BaseCommandService {
                         answers = await this.processTemplateInquiries(templateRepoPath, context);
 
                         context = await this.mergeObjects(context, answers);
-
-                        Logger.Basic(context);
 
                         await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
 
@@ -78,14 +76,15 @@ export class ElementCommandService extends BaseCommandService {
     protected async processTemplateInquiries(templatesRepoPath: string, context: any) {
         var cliConfig = await this.loadCLIConfig();
 
-        var questions = [
-            {
+        var questions = [];
+
+        if (!context.template)
+            questions.push({
                 type: 'list',
                 name: 'template',
                 message: `Choose ${cliConfig.Elements.Title}:`,
                 choices: cliConfig.Elements.Options
-            }
-        ];
+            });
 
         var setupQuestions: any = await this.loadTemplateInquirerQuestions(templatesRepoPath);
 

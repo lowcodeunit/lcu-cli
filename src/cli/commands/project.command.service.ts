@@ -1,5 +1,3 @@
-import Chalk from 'chalk';
-import { AsyncHelpers } from './../../helpers/3rdparty-async';
 import { Logger } from './../../logging/logger';
 import { BaseCommandService } from './BaseCommandService';
 import { Command } from 'commander'
@@ -49,8 +47,6 @@ export class ProjectCommandService extends BaseCommandService {
                         answers = await this.processTemplateInquiries(templateRepoPath, context);
 
                         context = await this.mergeObjects(context, answers);
-
-                        Logger.Basic(context);
 
                         await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
 

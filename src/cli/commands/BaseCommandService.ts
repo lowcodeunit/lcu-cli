@@ -282,7 +282,7 @@ export abstract class BaseCommandService {
         });
     }
 
-    protected async saveLCUConfig(lcuConfig: any) {
+    protected async saveLCUConfig(lcuConfig: LCUConfig) {
         await writeJson('lcu.json', lcuConfig, { spaces: '\t' });
     }
 }

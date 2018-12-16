@@ -1,8 +1,8 @@
-import { BaseCommandService } from './BaseCommandService';
-import path from 'path';
-import { Command } from 'commander'
 import Chalk from 'chalk';
 import { AsyncHelpers } from '../../helpers/3rdparty-async';
+import { Logger } from '../../logging/logger';
+import { BaseCommandService } from './BaseCommandService';
+import { Command } from 'commander'
 
 export class SolutionCommandService extends BaseCommandService {
     //  Fields
@@ -17,116 +17,88 @@ export class SolutionCommandService extends BaseCommandService {
     //  API Methods
     public async Setup(program: Command): Promise<Command> {
         return program
-            .command('solution [solution-name]')
-            .alias('sln')
-            .description('Initialize an LCU Solution into the project.')
-            .option('-p|--projects-path <path>', 'The path to initialize the LCU Solution to.')
-            .option('-r|--repository <repo>', 'The Template repository path to use.')
-            .option('-t|--temp-path <temp>', 'The temp file path to use.')
-            .action(async (projectName: string, options: any) => {
-                this.establishSectionHeader('Initializing');
-                
-                var config = {
-                    projectName: projectName,
-                    projectsPath: 'projects',
-                    repo: options.repository || 'smart-matrix/lcu-cli-templates-core',
-                    tempPath: path.join(options.tempPath || `${this.userHomePath}\\smart-matrix\\lcu-sln`)
-                };
+            .command('solution [name]')
+            .alias('el')
+            .description('Initialize an LCU Solution from core templates.')
+            .option('-p|--project <project>', 'The project to add the Solution to.')
+            .option('-e|--export <export>', 'The export file within a project to add the Solution to.')
+            .option('--path <path>', 'The path within a project to add the Solution to.')
+            .action(async (name: string, options: any) => {
+                if (!(await this.isLcuInitialized())) {
+                    this.establishSectionHeader('LCU must be Initialized', 'yellow');
 
-                config.projectName = await this.ensureProjectName(config.projectName);
+                    this.establishNextSteps(['Initialize the LCU:', 'lcu init'])
+                } else {
+                    this.establishSectionHeader('LCU Solution Setup');
 
-                var answers = await this.establishTemplates(path.join(config.tempPath, config.projectName, 'templates-repo'), config.repo).catch(err => {
-                    this.Ora.fail(`Issue establish templates`);
+                    var context: any = {
+                        name: name,
+                        path: options.path || 'lib',
+                        export: options.export || 'src/lcu.api.ts',
+                        projectName: options.project,
+                        template: options.template || null
+                    };
 
-                    process.exit(1);
-                });
+                    context.name = await this.ensureName(context.name);
 
-                config = Object.assign(config, answers);
+                    context.projectName = await this.ensureInquired(context.projectName, 'projectName');
+
+                    try {
+                        var lcuConfig = await this.loadLCUConfig();
+
+                        var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'solution')
+
+                        var answers = await this.inquir(templateRepoPath);
+
+                        context = await this.mergeObjects(context, answers);
+
+                        answers = await this.processTemplateInquiries(templateRepoPath, context);
+
+                        context = await this.mergeObjects(context, answers);
+
+                        await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
+
+                        this.Ora.succeed(`Completed setup for solution ${context.projectName}.`);
+                    } catch (err) {
+                        this.Ora.fail(`Issue establishing solution: \r\n${err}`);
+
+                        process.exit(1);
+                    }
+                }
             });
     }
 
     //  Helpers
-    protected async ensureProjectName(projectName: string) {
-        while (!projectName) {
-            var answs: any = await this.inquir([
-                {
-                    type: 'input',
-                    name: 'projectName',
-                    message: 'What is the project name?'
-                }
-            ], 'Issue loading project name');
-
-            projectName = answs.projectName;
-        }
-
-        return projectName;
+    protected async ensureName(name: string) {
+        return await this.ensureInquired(name, 'name');
     }
 
-    protected async establishTemplates(repoTempPath: string, repo: string) {
-        return new Promise<{}>(async (resolve, reject) => {
-            var ora = this.Ora.start(`Loading Templates Repository '${repo}'`);
+    protected async processTemplateInquiries(templatesRepoPath: string, context: any) {
+        var cliConfig = await this.loadCLIConfig();
 
-            await AsyncHelpers.rimraf(repoTempPath).catch(err => {
-                ora.fail(`Issue cleaning temp path @ '${Chalk.yellow(repoTempPath)}': ${Chalk.red(err)}`);
+        var questions = [];
 
-                process.exit(1);
+        if (!context.template)
+            questions.push({
+                type: 'list',
+                name: 'template',
+                message: `Choose ${cliConfig.Solutions.Title}:`,
+                choices: cliConfig.Solutions.Options
             });
 
-            await AsyncHelpers.downloadGit(repo, repoTempPath).catch((err) => {
-                ora.fail(`Template loading failed with: \n\t${Chalk.red(err)}`);
+        var setupQuestions: any = await this.loadTemplateInquirerQuestions(templatesRepoPath);
 
-                process.exit(1);
-            });
+        if (setupQuestions && setupQuestions.length > 0)
+            questions.push(...setupQuestions)
 
-            ora.succeed(`Loaded Templates to '${repoTempPath}'`);
+        var answers: any = await this.inquir(questions);
 
-            var repoTemplatesTempPath = path.join(repoTempPath, 'templates');
+        var repoTemplateTempPath = this.pathJoin(templatesRepoPath, answers.template);
 
-            var choices = await this.loadTemplateOptions(repoTemplatesTempPath);
+        var templateAnswers: any = await this.inquir(repoTemplateTempPath);
 
-            var setupQuestions: any = await this.loadTemplateSetupQuestions(repoTemplatesTempPath);
+        answers = await this.mergeObjects(answers, templateAnswers);
 
-            var questions = [
-                {
-                    type: 'list',
-                    name: 'template',
-                    message: 'Choose Template:',
-                    choices: choices
-                }
-            ];
-
-            if (setupQuestions && setupQuestions.length > 0)
-                questions.push(...setupQuestions)
-
-            var answers: any = await this.inquir(questions);
-
-            var repoTemplateTempPath = path.join(repoTemplatesTempPath, answers.template);
-
-            var templateQuestions: any = await this.loadTemplateSetupQuestions(repoTemplateTempPath);
-
-            var templateAnswers: any = await this.inquir(templateQuestions);
-
-            answers = Object.assign(answers, templateAnswers);
-
-            resolve(answers)
-        });
-    }
-
-    protected async loadTemplateOptions(rootPath: string) {
-        var file = path.join(rootPath, `${this.SysPath}/options.json`);
-
-        return this.loadJSON(file);
-    }
-
-    protected async loadTemplateSetupQuestions(rootPath: string) {
-        var file = path.join(rootPath, `${this.SysPath}/setup.js`);
-
-        try {
-            return this.loadJS(file);
-        } catch (err) {
-            console.log(err);
-
-            return [];
-        }
+        return answers
     }
 }

@@ -33,7 +33,7 @@ export class ElementCommandService extends BaseCommandService {
 
                     var context: any = {
                         name: name,
-                        path: options.path || 'src/lib',
+                        path: options.path || 'lib',
                         export: options.export || 'src/lcu.api.ts',
                         projectName: options.project,
                         template: options.template || null

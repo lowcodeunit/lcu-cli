@@ -98,34 +98,64 @@ export class UpdateCommandService extends BaseCommandService {
     }
 
     protected async upgradeLCUPackages() {
-        var packageJSON = await this.loadJSON('package.json');
+        return new Promise<{}>(async (resolve, reject) => {
+            var packageJSON = await this.loadJSON('package.json');
 
-        var deps: [] = packageJSON.dependencies || [];
+            var deps: [] = packageJSON.dependencies || [];
 
-        var devDeps: [] = packageJSON.devDependencies || [];
+            var devDeps: [] = packageJSON.devDependencies || [];
 
-        var lcuUpgradeCommands = [];
+            var lcuUpgradeCommands = [];
 
-        Object.keys(deps).forEach(depKey => {
-            var dep = deps[depKey];
+            Object.keys(deps).forEach(depKey => {
+                var dep = deps[depKey];
 
-            if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
-                lcuUpgradeCommands.push(`npm i ${depKey}@latest --save`);
-        });
+                if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
+                    lcuUpgradeCommands.push(`npm i ${depKey}@latest --save`);
+            });
 
-        Object.keys(devDeps).forEach(depKey => {
-            var dep = deps[depKey];
+            Object.keys(devDeps).forEach(depKey => {
+                var dep = deps[depKey];
 
-            if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
-                lcuUpgradeCommands.push(`npm i ${depKey}@latest --save-dev`);
-        });
+                if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
+                    lcuUpgradeCommands.push(`npm i ${depKey}@latest --save-dev`);
+            });
 
-        lcuUpgradeCommands.forEach(upgrade => {
-            Logger.Basic(`Executing upgrade command '${upgrade}'...`);
+            if (lcuUpgradeCommands.length > 0)
+                lcuUpgradeCommands.forEach(upgrade => {
+                    Logger.Basic(`Executing upgrade command '${upgrade}'...`);
 
-            exeq(upgrade)
+                    var proc = exeq(upgrade);
 
-            Logger.Basic(`Executed upgrade command '${upgrade}'!`);
+                    proc.q.on('stdout', (data) => {
+                        Logger.Basic(data);
+                    });
+
+                    proc.q.on('stderr', (data) => {
+                        Logger.Basic(data);
+                    });
+
+                    proc.q.on('killed', (reason) => {
+                        Logger.Basic(`Killed upgrade command '${upgrade}'!`);
+                    });
+
+                    proc.q.on('done', async () => {
+                        Logger.Basic(`Executed upgrade command '${upgrade}'!`);
+
+                        resolve();
+                    });
+
+                    proc.q.on('failed', () => {
+                        Logger.Basic(`Failed upgrade command '${upgrade}'!`);
+
+                        reject();
+                    });
+                });
+            else {
+                Logger.Basic(`Executed upgrade command !`);
+
+                resolve();
+            }
         });
     }
 }

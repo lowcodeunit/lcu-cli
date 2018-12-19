@@ -247,7 +247,7 @@ export abstract class BaseCommandService {
     
                 var ora = this.Ora.start(`Executing command: ${command}`);
     
-                var proc = exeq(command)
+                var proc = exeq(command);
     
                 proc.q.on('stdout', (data) => {
                     // Logger.Basic(data);

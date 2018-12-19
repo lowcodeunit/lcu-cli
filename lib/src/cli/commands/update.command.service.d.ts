@@ -5,4 +5,5 @@ export declare class UpdateCommandService extends BaseCommandService {
     Setup(program: Command): Promise<Command>;
     protected establishTemplatesRepo(repoTempPath: string, repo: string): Promise<{}>;
     protected processTemplates(context: any, subPath: string): Promise<void>;
+    protected upgradeLCUPackages(): Promise<void>;
 }

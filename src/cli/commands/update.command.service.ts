@@ -110,14 +110,14 @@ export class UpdateCommandService extends BaseCommandService {
             var dep = deps[depKey];
 
             if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
-                lcuUpgradeCommands.push(`${depKey}@latest --save`);
+                lcuUpgradeCommands.push(`npm i ${depKey}@latest --save`);
         });
 
         Object.keys(devDeps).forEach(depKey => {
             var dep = deps[depKey];
 
             if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
-                lcuUpgradeCommands.push(`${depKey}@latest --save-dev`);
+                lcuUpgradeCommands.push(`npm i ${depKey}@latest --save-dev`);
         });
 
         lcuUpgradeCommands.forEach(upgrade => {

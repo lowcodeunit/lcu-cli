@@ -1,6 +1,8 @@
+import { Logger } from './../../logging/logger';
 import { BaseCommandService } from './BaseCommandService';
 import { Command } from 'commander'
 import Chalk from 'chalk';
+import exeq from 'exeq';
 import { AsyncHelpers } from '../../helpers/3rdparty-async';
 
 export class UpdateCommandService extends BaseCommandService {
@@ -28,7 +30,7 @@ export class UpdateCommandService extends BaseCommandService {
                     this.establishSectionHeader('Updating');
 
                     var lcuConfig = await this.loadLCUConfig();
-                    
+
                     var context = {
                         repo: options.repository || lcuConfig.templates.repository || 'lowcodeunit-devkit/lcu-cli-templates-core'
                     };
@@ -47,6 +49,8 @@ export class UpdateCommandService extends BaseCommandService {
                         context = Object.assign(context, answers);
 
                         await this.processTemplates(context, 'update');
+
+                        await this.upgradeLCUPackages();
 
                         this.Ora.succeed('Completed initialization of the LCU');
                     } catch (err) {
@@ -91,5 +95,37 @@ export class UpdateCommandService extends BaseCommandService {
         var source = this.pathJoin(templatesRepoPath, subPath);
 
         await this.processTemplateCommands(source, context);
+    }
+
+    protected async upgradeLCUPackages() {
+        var packageJSON = await this.loadJSON('package.json');
+
+        var deps: [] = packageJSON.dependencies || [];
+
+        var devDeps: [] = packageJSON.devDependencies || [];
+
+        var lcuUpgradeCommands = [];
+
+        Object.keys(deps).forEach(depKey => {
+            var dep = deps[depKey];
+
+            if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
+                lcuUpgradeCommands.push(`${depKey}@latest --save`);
+        });
+
+        Object.keys(devDeps).forEach(depKey => {
+            var dep = deps[depKey];
+
+            if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
+                lcuUpgradeCommands.push(`${depKey}@latest --save-dev`);
+        });
+
+        lcuUpgradeCommands.forEach(upgrade => {
+            Logger.Basic(`Executing upgrade command '${upgrade}'...`);
+
+            exeq(upgrade)
+
+            Logger.Basic(`Executed upgrade command '${upgrade}'!`);
+        });
     }
 }

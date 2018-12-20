@@ -52,7 +52,7 @@ export class UpdateCommandService extends BaseCommandService {
 
                         await this.upgradeLCUPackages();
 
-                        this.Ora.succeed('Completed initialization of the LCU');
+                        this.Ora.succeed('Completed update of the LCU');
                     } catch (err) {
                         this.Ora.fail(`Issue updating LCU`);
 

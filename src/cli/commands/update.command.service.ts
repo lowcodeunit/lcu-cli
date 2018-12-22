@@ -105,21 +105,33 @@ export class UpdateCommandService extends BaseCommandService {
 
             var devDeps: [] = packageJSON.devDependencies || [];
 
+            var lcuValues = ['@lcu', '@lowcodeunit'];
+
             var lcuUpgradeCommands = [];
 
-            Object.keys(deps).forEach(depKey => {
+            var depsUpgradeCommands = Object.keys(deps).map(depKey => {
                 var dep = deps[depKey];
 
-                if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
-                    lcuUpgradeCommands.push(`npm i ${depKey}@latest --save`);
+                if (lcuValues.some(v => depKey.startsWith(v)))
+                    return `${depKey}@latest`;
+                else
+                    return '';
             });
 
-            Object.keys(devDeps).forEach(depKey => {
+            if (depsUpgradeCommands && depsUpgradeCommands.length > 0) 
+                lcuUpgradeCommands.push(`npm i ${depsUpgradeCommands.join(' ')} --save`);
+
+            var devDepsUpgradeCommands = Object.keys(devDeps).map(depKey => {
                 var dep = deps[depKey];
 
-                if (depKey.startsWith('@lcu') || depKey.startsWith('@lowcodeunit'))
-                    lcuUpgradeCommands.push(`npm i ${depKey}@latest --save-dev`);
+                if (lcuValues.some(v => depKey.startsWith(v)))
+                    return `${depKey}@latest`;
+                else
+                    return '';
             });
+
+            if (devDepsUpgradeCommands && devDepsUpgradeCommands.length > 0) 
+                lcuUpgradeCommands.push(`npm i ${devDepsUpgradeCommands.join(' ')} --save-dev`);
 
             if (lcuUpgradeCommands.length > 0) {
                 var upgrade = lcuUpgradeCommands.join(' && ');

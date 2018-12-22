@@ -115,8 +115,8 @@ export class UpdateCommandService extends BaseCommandService {
                 if (lcuValues.some(v => depKey.startsWith(v)))
                     return `${depKey}@latest`;
                 else
-                    return '';
-            });
+                    return null;
+            }).filter(d => d != null);
 
             if (depsUpgradeCommands && depsUpgradeCommands.length > 0) 
                 lcuUpgradeCommands.push(`npm i ${depsUpgradeCommands.join(' ')} --save`);
@@ -127,8 +127,8 @@ export class UpdateCommandService extends BaseCommandService {
                 if (lcuValues.some(v => depKey.startsWith(v)))
                     return `${depKey}@latest`;
                 else
-                    return '';
-            });
+                    return null;
+            }).filter(d => d != null);
 
             if (devDepsUpgradeCommands && devDepsUpgradeCommands.length > 0) 
                 lcuUpgradeCommands.push(`npm i ${devDepsUpgradeCommands.join(' ')} --save-dev`);

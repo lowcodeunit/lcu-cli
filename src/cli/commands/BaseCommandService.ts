@@ -237,10 +237,10 @@ export abstract class BaseCommandService {
 
         ora.succeed(`Loaded commands`);
 
-        await this.processNextCommand(commands, context);
+        await this.processCommand(commands, context);
     }
 
-    protected processNextCommand(commands: string[], context: any): Promise<void> {
+    protected processCommand(commands: string[], context: any): Promise<void> {
         return new Promise((resolve, reject) => {
             if (commands && commands.length > 0) {
                 var command = commands.shift();
@@ -264,7 +264,7 @@ export abstract class BaseCommandService {
                 proc.q.on('done', async () => {
                     ora.succeed(`Successfully executed command: ${command}`);
     
-                    await this.processNextCommand(commands, context);
+                    await this.processCommand(commands, context);
                     
                     resolve();
                 });

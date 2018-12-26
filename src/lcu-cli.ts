@@ -7,6 +7,7 @@ import { version } from '../package.json';
 import { ProjectCommandService } from './cli/commands/project.command.service';
 import { ElementCommandService } from './cli/commands/element.command.service';
 import { UpdateCommandService } from './cli/commands/update.command.service';
+import { DAFCommandService } from './cli/commands/daf.command.service';
 
 var logger = new Logger();
 
@@ -22,6 +23,8 @@ var logger = new Logger();
     commands.push(new ElementCommandService());
 
     commands.push(new UpdateCommandService());
+
+    commands.push(new DAFCommandService());
 
     await cli.SetupCLI(commands);
 

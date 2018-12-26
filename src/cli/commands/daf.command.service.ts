@@ -52,20 +52,23 @@ export class DAFCommandService extends BaseCommandService {
 
             var fullName = `${context.scope}/${context.package}`;
 
+            var installPath = `node_modules/${context.scope}/${
+              context.package
+            }`;
+
             var commands = [];
 
             switch (context.actionName) {
               case "Deploy":
                 commands.push(`npm i ${fullName}@latest --save`);
+
+                commands.push(`rimraf ${context.destination}`);
                 break;
             }
 
             await this.processCommand(commands, context);
 
-            await copy(
-              `node_modules/${context.scope}/${context.package}`,
-              context.destination
-            );
+            await copy(installPath, context.destination);
 
             this.Ora.succeed(
               `Completed setup for project ${context.projectName}.`

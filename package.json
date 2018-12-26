@@ -1,6 +1,6 @@
 {
   "name": "@lcu/cli",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "description": "This is the home of the LCU DevKit and the LCU CLI code.",
   "main": "./lib/src/lcu-cli.js",
   "bin": {

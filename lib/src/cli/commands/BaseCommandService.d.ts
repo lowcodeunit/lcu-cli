@@ -30,6 +30,6 @@ export declare abstract class BaseCommandService {
     protected mergeObjects(root: any, merged: any): Promise<any>;
     protected pathJoin(...paths: string[]): string;
     protected processTemplateCommands(templateSourcePath: string, context: any): Promise<void>;
-    protected processNextCommand(commands: string[], context: any): Promise<void>;
+    protected processCommand(commands: string[], context: any): Promise<void>;
     protected saveLCUConfig(lcuConfig: LCUConfig): Promise<void>;
 }

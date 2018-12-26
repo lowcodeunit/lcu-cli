@@ -56,7 +56,7 @@ export class DAFCommandService extends BaseCommandService {
 
             switch (context.actionName) {
               case "Deploy":
-                commands.push("npm i ${fullName}@latest --save");
+                commands.push(`npm i ${fullName}@latest --save`);
                 break;
             }
 

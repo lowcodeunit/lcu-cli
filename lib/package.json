@@ -1,6 +1,6 @@
 {
     "name": "@lcu/cli",
-    "version": "0.0.43",
+    "version": "0.0.44",
     "description": "This is the home of the LCU DevKit and the LCU CLI code.",
     "main": "./lib/src/lcu-cli.js",
     "bin": {
@@ -18,19 +18,19 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/smart-matrix/lcu-cli.git"
+        "url": "git+https://github.com/lowcodeunit/lcu-cli.git"
     },
     "keywords": [
-        "Smart Matrix",
+        "LowCodeUnit",
         "LCU",
         "CLI"
     ],
     "author": "Michael Gearhardt",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/smart-matrix/lcu-cli/issues"
+        "url": "https://github.com/lowcodeunit/lcu-cli/issues"
     },
-    "homepage": "https://github.com/smart-matrix/lcu-cli#readme",
+    "homepage": "https://github.com/lowcodeunit/lcu-cli#readme",
     "dependencies": {
         "@types/fs-extra": "^5.0.4",
         "axios": "^0.18.0",

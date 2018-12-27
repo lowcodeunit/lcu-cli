@@ -27,7 +27,7 @@ export class DAFCommandService extends BaseCommandService {
       )
       .option("-s|--scope <scope>", "The Scope to use in the operation.")
       .option(
-        "-d|--dest|--destination <destination>",
+        "-d|--destination <destination>",
         "The Destination to use in the operation."
       )
       .action(async (actionName: string, options: any) => {
@@ -48,8 +48,6 @@ export class DAFCommandService extends BaseCommandService {
           context.actionName = await this.ensureActionName(context.actionName);
 
           try {
-            var lcuConfig = await this.loadLCUConfig();
-
             var fullName = `${context.scope}/${context.package}`;
 
             var installPath = `node_modules/${context.scope}/${

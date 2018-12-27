@@ -2,7 +2,7 @@ import { Logger } from "../../logging/logger";
 import { BaseCommandService } from "./BaseCommandService";
 import { Command } from "commander";
 import exeq from "exeq";
-import { copy } from "fs-extra";
+import { copy, readJSON, writeJSON } from "fs-extra";
 
 export class DAFCommandService extends BaseCommandService {
   //  Fields
@@ -30,6 +30,8 @@ export class DAFCommandService extends BaseCommandService {
         "-d|--destination <destination>",
         "The Destination to use in the operation."
       )
+      .option("-e|--env <env>", "The Environment to use in the operation.")
+      .option("--project <project>", "The Project to use in the operation.")
       .action(async (actionName: string, options: any) => {
         if (!(await this.isLcuInitialized())) {
           this.establishSectionHeader("LCU must be Initialized", "yellow");
@@ -38,35 +40,27 @@ export class DAFCommandService extends BaseCommandService {
         } else {
           this.establishSectionHeader("Distributed Application Framework");
 
-          var context: any = {
+          var context = {
             actionName: actionName,
             destination: options.destination,
+            env: options.env,
             package: options.package,
+            project: options.project,
             scope: options.scope
           };
 
           context.actionName = await this.ensureActionName(context.actionName);
 
           try {
-            var fullName = `${context.scope}/${context.package}`;
-
-            var installPath = `node_modules/${context.scope}/${
-              context.package
-            }`;
-
-            var commands = [];
-
             switch (context.actionName) {
               case "Deploy":
-                commands.push(`npm i ${fullName}@latest --save`);
+                await this.deployAction(context);
+                break;
 
-                commands.push(`rimraf ${context.destination}`);
+              case "Switch":
+                await this.switchAction(context.env, context.project);
                 break;
             }
-
-            await this.processCommand(commands, context);
-
-            await copy(installPath, context.destination);
 
             this.Ora.succeed(
               `Completed DAF command for ${context.actionName}.`
@@ -81,6 +75,22 @@ export class DAFCommandService extends BaseCommandService {
   }
 
   //  Helpers
+  protected async deployAction(context: any) {
+    var fullName = `${context.scope}/${context.package}`;
+
+    var installPath = `node_modules/${context.scope}/${context.package}`;
+
+    var commands = [];
+
+    commands.push(`npm i ${fullName}@latest --save`);
+
+    commands.push(`rimraf ${context.destination}`);
+
+    await this.processCommand(commands, context);
+
+    await copy(installPath, context.destination);
+  }
+
   protected async ensureActionName(actionName: string) {
     while (!actionName) {
       var answs: any = await this.inquir(
@@ -89,7 +99,7 @@ export class DAFCommandService extends BaseCommandService {
             type: "list",
             name: "actionName",
             message: "What action do you want to use?",
-            choices: ["Deploy"]
+            choices: ["Deploy", "Switch"]
           }
         ],
         "Issue loading action name"
@@ -99,5 +109,30 @@ export class DAFCommandService extends BaseCommandService {
     }
 
     return actionName;
+  }
+
+  protected async switchAction(env?: "prod" | "dev", project?: string) {
+    var angular = await readJSON("angular.json");
+
+    project = project || angular.defaultProject;
+
+    const prodPath = `dist/${project}`;
+
+    const devPath = `C:\\Fathym\\Git\\Apps\\Forge\\Fathym.Forge.Web\\wwwroot\\${project}`;
+
+    const outArgs = {
+      DistPath: env == "prod" ? prodPath : env == "dev" ? devPath : null
+    };
+
+    var buildOptions = angular.projects[project].architect.build.options;
+
+    if (!outArgs.DistPath) {
+      if (buildOptions.outputPath == prodPath) outArgs.DistPath = devPath;
+      else if (buildOptions.outputPath == devPath) outArgs.DistPath = prodPath;
+    }
+
+    buildOptions.outputPath = outArgs.DistPath;
+
+    await writeJSON("angular.json", angular, { spaces: "\t" });
   }
 }

@@ -69,10 +69,10 @@ export class DAFCommandService extends BaseCommandService {
             await copy(installPath, context.destination);
 
             this.Ora.succeed(
-              `Completed setup for project ${context.projectName}.`
+              `Completed DAF command for ${context.actionName}.`
             );
           } catch (err) {
-            this.Ora.fail(`Issue establishing project: \r\n${err}`);
+            this.Ora.fail(`Issue with DAF command: \r\n${err}`);
 
             process.exit(1);
           }

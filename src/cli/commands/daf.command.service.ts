@@ -116,8 +116,6 @@ export class DAFCommandService extends BaseCommandService {
 
     project = project || angular.defaultProject;
 
-    console.log(project);
-
     const prodPath = `dist/${project}`;
 
     const devPath = `C:\\Fathym\\Git\\Apps\\Forge\\Fathym.Forge.Web\\wwwroot\\${project}`;
@@ -125,8 +123,6 @@ export class DAFCommandService extends BaseCommandService {
     const outArgs = {
       DistPath: env == "prod" ? prodPath : env == "dev" ? devPath : null
     };
-
-    console.log(outArgs);
 
     var buildOptions = angular.projects[project].architect.build.options;
 

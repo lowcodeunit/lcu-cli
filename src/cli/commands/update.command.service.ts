@@ -21,6 +21,7 @@ export class UpdateCommandService extends BaseCommandService {
             .command('update')
             .alias('up')
             .description('Update location with latest LCU libraries.')
+            .option('-s|--scope <scope>', 'The scope to add the Solution to.')
             .action(async (options: any) => {
                 if (!(await this.isLcuInitialized())) {
                     this.establishSectionHeader('LCU must be Initialized', 'yellow');
@@ -32,7 +33,8 @@ export class UpdateCommandService extends BaseCommandService {
                     var lcuConfig = await this.loadLCUConfig();
 
                     var context = {
-                        repo: options.repository || lcuConfig.templates.repository || 'lowcodeunit-devkit/lcu-cli-templates-core'
+                        repo: options.repository || lcuConfig.templates.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
+                        scopes: options.scope ? options.scope.split(',') : ['@lcu', '@lowcodeunit']
                     };
 
                     lcuConfig.templates.repository = context.repo;
@@ -50,7 +52,7 @@ export class UpdateCommandService extends BaseCommandService {
 
                         await this.processTemplates(context, 'update');
 
-                        await this.upgradeLCUPackages();
+                        await this.upgradeLCUPackages(context.scopes);
 
                         this.Ora.succeed('Completed update of the LCU');
                     } catch (err) {
@@ -97,7 +99,7 @@ export class UpdateCommandService extends BaseCommandService {
         await this.processTemplateCommands(source, context);
     }
 
-    protected async upgradeLCUPackages() {
+    protected async upgradeLCUPackages(scopes: string[]) {
         return new Promise<{}>(async (resolve, reject) => {
             var packageJSON = await this.loadJSON('package.json');
 
@@ -105,14 +107,12 @@ export class UpdateCommandService extends BaseCommandService {
 
             var devDeps: [] = packageJSON.devDependencies || [];
 
-            var lcuValues = ['@lcu', '@lowcodeunit'];
-
             var lcuUpgradeCommands = [];
 
             var depsUpgradeCommands = Object.keys(deps).map(depKey => {
                 var dep = deps[depKey];
 
-                if (lcuValues.some(v => depKey.startsWith(v)))
+                if (scopes.some(v => depKey.startsWith(v)))
                     return `${depKey}@latest`;
                 else
                     return null;
@@ -124,7 +124,7 @@ export class UpdateCommandService extends BaseCommandService {
             var devDepsUpgradeCommands = Object.keys(devDeps).map(depKey => {
                 var dep = deps[depKey];
 
-                if (lcuValues.some(v => depKey.startsWith(v)))
+                if (scopes.some(v => depKey.startsWith(v)))
                     return `${depKey}@latest`;
                 else
                     return null;

@@ -2,7 +2,7 @@ import { Logger } from "../../logging/logger";
 import { BaseCommandService } from "./BaseCommandService";
 import { Command } from "commander";
 import exeq from "exeq";
-import { copy, readJSON, writeJSON } from "fs-extra";
+import { copy, readJSON, writeJSON, pathExists } from "fs-extra";
 
 export class DAFCommandService extends BaseCommandService {
   //  Fields
@@ -84,7 +84,8 @@ export class DAFCommandService extends BaseCommandService {
 
     commands.push(`npm i ${fullName}@latest --save`);
 
-    commands.push(`rimraf ${context.destination}`);
+    if (await pathExists(context.destination))
+      commands.push(`rimraf ${context.destination}`);
 
     await this.processCommand(commands, context);
 

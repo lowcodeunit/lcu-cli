@@ -2,13 +2,13 @@
     "name": "@lcu/cli",
     "version": "0.0.54",
     "description": "This is the home of the LCU DevKit and the LCU CLI code.",
-    "main": "./lib/src/lcu-cli.js",
+    "main": "./dist/src/lcu-cli.js",
     "bin": {
-        "lcu": "./lib/src/lcu-cli.js"
+        "lcu": "./dist/src/lcu-cli.js"
     },
     "scripts": {
-        "deploy": "npm version patch && npm run build && npm run deploy:lib",
-        "deploy:lib": "npm publish ./ --access public",
+        "deploy": "npm version patch && npm run build && npm run deploy:dist",
+        "deploy:dist": "npm publish ./ --access public",
         "create": "npm run build && npm run test",
         "build": "tsc -p .",
         "build:dev": "tsc -w",

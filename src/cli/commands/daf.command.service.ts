@@ -18,20 +18,13 @@ export class DAFCommandService extends BaseCommandService {
   public async Setup(program: Command): Promise<Command> {
     return program
       .command("daf [action-name]")
-      .description(
-        "Executed the various DAF related LCU commands against the current workspace."
-      )
-      .option(
-        "-p|--package <package>",
-        "The Package name to use in the operation."
-      )
+      .description("Executed the various DAF related LCU commands against the current workspace.")
+      .option("-p|--package <package>", "The Package name to use in the operation.")
       .option("-s|--scope <scope>", "The Scope to use in the operation.")
-      .option(
-        "-d|--destination <destination>",
-        "The Destination to use in the operation."
-      )
+      .option("-d|--destination <destination>", "The Destination to use in the operation.")
       .option("-e|--env <env>", "The Environment to use in the operation.")
       .option("--project <project>", "The Project to use in the operation.")
+      .option("--install <install>", "Whether or nor to install the package.")
       .action(async (actionName: string, options: any) => {
         if (!(await this.isLcuInitialized())) {
           this.establishSectionHeader("LCU must be Initialized", "yellow");
@@ -44,6 +37,7 @@ export class DAFCommandService extends BaseCommandService {
             actionName: actionName,
             destination: options.destination,
             env: options.env,
+            install: options.install,
             package: options.package,
             project: options.project,
             scope: options.scope
@@ -62,9 +56,7 @@ export class DAFCommandService extends BaseCommandService {
                 break;
             }
 
-            this.Ora.succeed(
-              `Completed DAF command for ${context.actionName}.`
-            );
+            this.Ora.succeed(`Completed DAF command for ${context.actionName}.`);
           } catch (err) {
             this.Ora.fail(`Issue with DAF command: \r\n${err}`);
 
@@ -82,10 +74,9 @@ export class DAFCommandService extends BaseCommandService {
 
     var commands = [];
 
-    commands.push(`npm i ${fullName}@latest --save`);
+    if (context.install) commands.push(`npm i ${fullName}@latest --save`);
 
-    if (await pathExists(context.destination))
-      commands.push(`rimraf ${context.destination}`);
+    if (await pathExists(context.destination)) commands.push(`rimraf ${context.destination}`);
 
     await this.processCommand(commands, context);
 

@@ -1,2 +1,0 @@
-/*** polyfills ***/
-import 'core-js';

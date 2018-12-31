@@ -24,7 +24,7 @@ export class DAFCommandService extends BaseCommandService {
       .option("-d|--destination <destination>", "The Destination to use in the operation.")
       .option("-e|--env <env>", "The Environment to use in the operation.")
       .option("--project <project>", "The Project to use in the operation.")
-      .option("--install <install>", "Whether or nor to install the package.")
+      .option("-i|--install <install>", "Whether or nor to install the package.")
       .action(async (actionName: string, options: any) => {
         if (!(await this.isLcuInitialized())) {
           this.establishSectionHeader("LCU must be Initialized", "yellow");

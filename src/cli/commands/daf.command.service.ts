@@ -115,14 +115,6 @@ export class DAFCommandService extends BaseCommandService {
     protected async saveUserLcuConfig(lcu: LCUUserConfig) {
       var lcuFile = `${this.userHomePath}/lcu.json`;
 
-      var lcu: LCUUserConfig = null;
-
-      if (await pathExists(lcuFile)) {
-          lcu = await this.loadJSON(lcuFile);
-      } else {
-          lcu = <LCUUserConfig>{};
-      }
-
       await this.writeJson(lcuFile, lcu);
     }
 

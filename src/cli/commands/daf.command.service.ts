@@ -91,21 +91,39 @@ export class DAFCommandService extends BaseCommandService {
     }
 
     protected async initAction(context: any) {
-        var fullName = `${context.scope}/${context.package}`;
-
-        var lcuFile = `${this.userHomePath}/lcu.json`;
-
-        var lcu: LCUUserConfig = null;
-
-        if (await pathExists(lcuFile)) {
-            lcu = await this.loadJSON(lcuFile);
-        } else {
-            lcu = <LCUUserConfig>{};
-        }
+        var lcu = await this.loadUserLcuConfig();
 
         lcu.ForgeRoot = context.root;
 
-        await this.writeJson(lcuFile, lcu);
+        this.saveUserLcuConfig(lcu);
+    }
+
+    protected async loadUserLcuConfig() {
+      var lcuFile = `${this.userHomePath}/lcu.json`;
+
+      var lcu: LCUUserConfig = null;
+
+      if (await pathExists(lcuFile)) {
+          lcu = await this.loadJSON(lcuFile);
+      } else {
+          lcu = <LCUUserConfig>{};
+      }
+
+      return lcu;
+    }
+
+    protected async saveUserLcuConfig(lcu: LCUUserConfig) {
+      var lcuFile = `${this.userHomePath}/lcu.json`;
+
+      var lcu: LCUUserConfig = null;
+
+      if (await pathExists(lcuFile)) {
+          lcu = await this.loadJSON(lcuFile);
+      } else {
+          lcu = <LCUUserConfig>{};
+      }
+
+      await this.writeJson(lcuFile, lcu);
     }
 
     protected async ensureActionName(actionName: string) {
@@ -135,7 +153,11 @@ export class DAFCommandService extends BaseCommandService {
 
         const prodPath = `dist/${project}`;
 
-        const devPath = `C:\\Fathym\\Git\\Apps\\Forge\\Fathym.Forge.Web\\wwwroot\\${project}`;
+        var lcu = await this.loadUserLcuConfig();
+
+        const devRoot = lcu.ForgeRoot || `C:\\Fathym\\Git\\Apps\\Forge\\Fathym.Forge.Web\\wwwroot`;
+
+        const devPath = this.pathJoin(devRoot, project);
 
         const outArgs = {
             DistPath: env == "prod" ? prodPath : env == "dev" ? devPath : null

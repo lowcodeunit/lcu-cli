@@ -283,6 +283,10 @@ export abstract class BaseCommandService {
     }
 
     protected async saveLCUConfig(lcuConfig: LCUConfig) {
-        await writeJson('lcu.json', lcuConfig, { spaces: '\t' });
+        await this.writeJson('lcu.json', lcuConfig);
+    }
+
+    protected async writeJson(file: string, val: any) {
+        await writeJson(file, val, { spaces: '\t' });
     }
 }

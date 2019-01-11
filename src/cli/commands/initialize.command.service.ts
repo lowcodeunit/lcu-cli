@@ -21,6 +21,8 @@ export class InitializeCommandService extends BaseCommandService {
             .description('Initialize location as an LCU compatible directory.')
             .option('-r|--repository <repo>', 'The Template repository path to use as default for all projects (default: lowcodeunit-devkit/lcu-cli-templates-core).')
             .option('-p|--projects-path <path>', 'The path to use for projects working directory (default: projects).')
+            .option('-w|--workspace <workspace>', 'The name of the workspce to use (default: workspace).')
+            .option('-s|--scope <scope>', 'The @scope to use for package names.')
             .action(async (options: any) => {
                 if (await this.isLcuInitialized())
                     this.establishSectionHeader('LCU Already Initialized', 'yellow');
@@ -28,8 +30,10 @@ export class InitializeCommandService extends BaseCommandService {
                     this.establishSectionHeader('Initializing');
 
                     var context = {
-                        projectsPath: 'projects',
-                        repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core'
+                        projectsPath: options.projectsPath || 'projects',
+                        repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
+                        scope: options.scope || "",
+                        workspace: options.workspace || 'workspace',
                     };
 
                     try {

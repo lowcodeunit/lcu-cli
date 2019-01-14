@@ -22,7 +22,7 @@ export class UpdateCommandService extends BaseCommandService {
             .alias('up')
             .description('Update location with latest LCU libraries.')
             .option('-s|--scope <scope>', 'The scope to add the Solution to.')
-            .option('-v|--version <version>', 'The version to update to.')
+            .option('--ver-to <ver-to>', 'The version to update to.')
             .action(async (options: any) => {
                 if (!(await this.isLcuInitialized())) {
                     this.establishSectionHeader('LCU must be Initialized', 'yellow');
@@ -36,7 +36,7 @@ export class UpdateCommandService extends BaseCommandService {
                     var context = {
                         repo: options.repository || lcuConfig.templates.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
                         scopes: options.scope ? options.scope.split(',') : ['@lcu', '@lowcodeunit'],
-                        version: options.version || 'latest'
+                        version: options.verTo || 'latest'
                     };
 
                     console.log(context);

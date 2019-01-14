@@ -22,6 +22,7 @@ export class UpdateCommandService extends BaseCommandService {
             .alias('up')
             .description('Update location with latest LCU libraries.')
             .option('-s|--scope <scope>', 'The scope to add the Solution to.')
+            .option('-v|--version <version>', 'The version to update to.')
             .action(async (options: any) => {
                 if (!(await this.isLcuInitialized())) {
                     this.establishSectionHeader('LCU must be Initialized', 'yellow');
@@ -34,7 +35,8 @@ export class UpdateCommandService extends BaseCommandService {
 
                     var context = {
                         repo: options.repository || lcuConfig.templates.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
-                        scopes: options.scope ? options.scope.split(',') : ['@lcu', '@lowcodeunit']
+                        scopes: options.scope ? options.scope.split(',') : ['@lcu', '@lowcodeunit'],
+                        version: options.version || 'latest'
                     };
 
                     lcuConfig.templates.repository = context.repo;
@@ -52,7 +54,7 @@ export class UpdateCommandService extends BaseCommandService {
 
                         await this.processTemplates(context, 'update');
 
-                        await this.upgradeLCUPackages(context.scopes);
+                        await this.upgradeLCUPackages(context.scopes, context.version);
 
                         this.Ora.succeed('Completed update of the LCU');
                     } catch (err) {
@@ -99,7 +101,7 @@ export class UpdateCommandService extends BaseCommandService {
         await this.processTemplateCommands(source, context);
     }
 
-    protected async upgradeLCUPackages(scopes: string[]) {
+    protected async upgradeLCUPackages(scopes: string[], version: string) {
         return new Promise<{}>(async (resolve, reject) => {
             var packageJSON = await this.loadJSON('package.json');
 
@@ -113,7 +115,7 @@ export class UpdateCommandService extends BaseCommandService {
                 var dep = deps[depKey];
 
                 if (scopes.some(v => depKey.startsWith(v)))
-                    return `${depKey}@latest`;
+                    return `${depKey}@${version}`;
                 else
                     return null;
             }).filter(d => d != null);

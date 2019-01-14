@@ -39,6 +39,8 @@ export class UpdateCommandService extends BaseCommandService {
                         version: options.version || 'latest'
                     };
 
+                    console.log(context);
+                    
                     lcuConfig.templates.repository = context.repo;
 
                     try {
@@ -127,7 +129,7 @@ export class UpdateCommandService extends BaseCommandService {
                 var dep = deps[depKey];
 
                 if (scopes.some(v => depKey.startsWith(v)))
-                    return `${depKey}@latest`;
+                    return `${depKey}@${version}`;
                 else
                     return null;
             }).filter(d => d != null);

@@ -52,8 +52,6 @@ export class ServeCommandService extends BaseCommandService {
                     try {
                         var ora = this.Ora.start(`Serving the project ${context.project}`);
 
-                        console.log(angularJson);
-                    
                         var outputPath = angularJson.projects[context.project].architect.build.options.outputPath;
 
                         console.log(outputPath);

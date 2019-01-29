@@ -109,9 +109,9 @@ export class ServeCommandService extends BaseCommandService {
         if (!shouldDelete) {
             var req = request.post(url, function (err, resp, body) {
                 if (err) {
-                    console.log('Error!');
+                    Logger.Basic('Error!');
                 } else {
-                    console.log('URL: ' + body);
+                    Logger.Basic('URL: ' + body);
                 }
             });
 
@@ -123,9 +123,9 @@ export class ServeCommandService extends BaseCommandService {
             
             var req = request.delete(url, function (err, resp, body) {
                 if (err) {
-                    console.log('Error!');
+                    Logger.Basic('Error!');
                 } else {
-                    console.log('URL: ' + body);
+                    Logger.Basic('URL: ' + body);
                 }
             });
         }

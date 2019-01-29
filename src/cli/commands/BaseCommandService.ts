@@ -116,6 +116,8 @@ export abstract class BaseCommandService {
     }
     
     protected async ensureInquired(value: string, propName: string, message: string = null) {
+        console.log(value);
+                    
         while (!value) {
             var answs: any = await this.inquir([
                 {

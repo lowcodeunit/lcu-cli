@@ -37,10 +37,16 @@ export class ServeCommandService extends BaseCommandService {
                         app: options.app
                     };
 
+                    console.log(context);
+                    
                     context.project = await this.ensureInquired(context.project, "project");
 
+                    console.log(context);
+                    
                     context.host = await this.ensureInquired(context.host, "host");
 
+                    console.log(context);
+                    
                     context.app = await this.ensureInquired(context.app, "application");
 
                     console.log(context);
@@ -65,6 +71,8 @@ export class ServeCommandService extends BaseCommandService {
                         ora.succeed('Completed serving of the project');
                     } catch (err) {
                         this.Ora.fail(`Issue updating LCU`);
+
+                        console.log(err);
 
                         process.exit(1);
                     }

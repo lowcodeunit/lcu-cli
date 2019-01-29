@@ -108,7 +108,12 @@ export class ServeCommandService extends BaseCommandService {
         var url = `${host}${app}`;
         
         if (!shouldDelete) {
-            var req = request.post(url, function (err, resp, body) {
+            var req = request.post({
+                url: url,
+                headers: {
+                    'f-dev-stream': 'future-auth-key??'
+                }
+              }, function (err, resp, body) {
                 if (err) {
                     Logger.Basic('Error!' + err);
                 } else {
@@ -122,7 +127,12 @@ export class ServeCommandService extends BaseCommandService {
         } else {
             url += `?deletePath=${filePath}`
             
-            var req = request.delete(url, function (err, resp, body) {
+            var req = request.delete({
+                url: url,
+                headers: {
+                  'f-dev-stream': 'future-auth-key??'
+                }
+              }, function (err, resp, body) {
                 if (err) {
                     Logger.Basic('Error!');
                 } else {

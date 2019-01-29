@@ -37,6 +37,12 @@ export class ServeCommandService extends BaseCommandService {
                         app: options.app
                     };
 
+                    context.project = await this.ensureInquired(context.project, "project");
+
+                    context.host = await this.ensureInquired(context.host, "host");
+
+                    context.app = await this.ensureInquired(context.app, "application");
+
                     console.log(context);
                     
                     try {

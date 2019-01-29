@@ -115,13 +115,13 @@ export abstract class BaseCommandService {
         Logger.Basic(Chalk[color](`${outer}${inner}  ${title}  ${inner}${outer}`));
     }
     
-    protected async ensureInquired(value: string, propName: string) {
+    protected async ensureInquired(value: string, propName: string, message: string = null) {
         while (!value) {
             var answs: any = await this.inquir([
                 {
                     type: 'input',
                     name: propName,
-                    message: `What is the ${propName}?`
+                    message: message || `What is the ${propName}?`
                 }
             ], `Issue loading ${propName}`);
 

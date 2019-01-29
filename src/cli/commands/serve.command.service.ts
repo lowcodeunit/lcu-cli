@@ -60,13 +60,13 @@ export class ServeCommandService extends BaseCommandService {
 
                         //  Broadcast to dev-stream start of new app, so as to clear out all old dev-stream files for the app
 
-                        recursive(outputPath, (err, files) => {
-                            files.forEach(file => {
-                                this.processFileChange(file, context.host, context.app);
-                            });  
-                        });
+                        // recursive(outputPath, (err, files) => {
+                        //     files.forEach(file => {
+                        //         this.processFileChange(file, context.host, context.app);
+                        //     });  
+                        // });
 
-                        Logger.Basic('Initial files loaded to dev-stream')
+                        // Logger.Basic('Initial files loaded to dev-stream')
 
                         var watcher = chokidar.watch(outputPath, {persistent: true});
 

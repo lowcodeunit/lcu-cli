@@ -48,20 +48,18 @@ export class ServeCommandService extends BaseCommandService {
                     
                     context.app = await this.ensureInquired(context.app, "application");
 
-                    console.log(context);
+                    Logger.Basic(context);
                     
                     try {
                         var ora = this.Ora.start(`Serving the project ${context.project}`);
 
                         var outputPath = angularJson.projects[context.project].architect.build.options.outputPath;
 
-                        console.log(outputPath);
+                        Logger.Basic(outputPath);
                     
-                        await this.processCommand([`ng build ${context.project} --watch`], context);
-
                         //  Broadcast to dev-stream start of new app, so as to clear out all old dev-stream files for the app
 
-                        var watcher = chokidar.watch(outputPath, {ignored: /^\./, persistent: true});
+                        var watcher = chokidar.watch(outputPath, {persistent: true});
 
                         watcher
                             .on('add', (path) => {
@@ -80,6 +78,8 @@ export class ServeCommandService extends BaseCommandService {
                         //  Broadcast the files from output path to dev-stream
 
                         //  Start a watch listener on the output path of project to stream all changes up the dev-stream
+
+                        await this.processCommand([`ng build ${context.project} --watch`], context);
 
                         ora.succeed('Completed serving of the project');
                     } catch (err) {

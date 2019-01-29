@@ -65,13 +65,13 @@ export class ServeCommandService extends BaseCommandService {
 
                         watcher
                             .on('add', (path) => {
-                                this.processFileChange(path, context.host, context.app, outputPath);
+                                this.processFileChange(path, context.host, context.app);
                             })
                             .on('change', (path) => {
-                                this.processFileChange(path, context.host, context.app, outputPath);
+                                this.processFileChange(path, context.host, context.app);
                             })
                             .on('unlink', (path) => {
-                                this.processFileChange(path, context.host, context.app, outputPath);
+                                this.processFileChange(path, context.host, context.app);
                             })
                             .on('error', (error) => {
                                 console.error('Error happened', error);
@@ -100,7 +100,7 @@ export class ServeCommandService extends BaseCommandService {
         if (filePath.startsWith('\\'))
             filePath = filePath.substring(1);
 
-        Logger.Basic(`Processing file change for ${filePath} to ${host}${app} as ${!shouldDelete ? 'upload' : 'delete'}`);
+        Logger.Basic(`Processing file change for ${filePath} to ${host}${app} as ${(!shouldDelete ? 'upload' : 'delete')}`);
         
         if (host.indexOf('://') < 0)
             host = `http://${host}`;

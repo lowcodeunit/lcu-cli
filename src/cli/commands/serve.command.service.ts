@@ -48,7 +48,7 @@ export class ServeCommandService extends BaseCommandService {
                     try {
                         var ora = this.Ora.start(`Serving the project ${context.project}`);
 
-                        var angularJson: any = this.loadJSON('angular.json');
+                        var angularJson: any = await this.loadJSON('angular.json');
 
                         console.log(angularJson);
                     

@@ -37,15 +37,9 @@ export class ServeCommandService extends BaseCommandService {
                         app: options.app
                     };
 
-                    console.log(context);
-                    
                     context.project = await this.ensureInquired(context.project, "project");
-
-                    console.log(context);
                     
                     context.host = await this.ensureInquired(context.host, "host");
-
-                    console.log(context);
                     
                     context.app = await this.ensureInquired(context.app, "application");
 
@@ -56,6 +50,8 @@ export class ServeCommandService extends BaseCommandService {
 
                         var angularJson: any = this.loadJSON('angular.json');
 
+                        console.log(angularJson);
+                    
                         var outputPath = angularJson.projects[context.project]
 
                         await this.processCommand([`ng build ${context.project} --watch`], context);

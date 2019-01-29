@@ -122,7 +122,7 @@ export class ServeCommandService extends BaseCommandService {
         if (!shouldDelete) {
             var req = request.post(url, function (err, resp, body) {
                 if (err) {
-                    Logger.Basic('Error!');
+                    Logger.Basic('Error!' + err);
                 } else {
                     Logger.Basic('URL: ' + body);
                 }

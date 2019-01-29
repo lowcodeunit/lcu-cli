@@ -39,7 +39,7 @@ export class ServeCommandService extends BaseCommandService {
 
                     var angularJson: any = await this.loadJSON('angular.json');
 
-                    var projects = Object.keys(angularJson.projects[context.project]);
+                    var projects = Object.keys(angularJson.projects);
 
                     context.project = await this.ensureInquiredOptions(context.project, "project", projects);
                     

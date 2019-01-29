@@ -37,7 +37,11 @@ export class ServeCommandService extends BaseCommandService {
                         app: options.app
                     };
 
-                    context.project = await this.ensureInquired(context.project, "project");
+                    var angularJson: any = await this.loadJSON('angular.json');
+
+                    var projects = Object.keys(angularJson.projects[context.project]);
+
+                    context.project = await this.ensureInquiredOptions(context.project, "project", projects);
                     
                     context.host = await this.ensureInquired(context.host, "host");
                     
@@ -48,12 +52,12 @@ export class ServeCommandService extends BaseCommandService {
                     try {
                         var ora = this.Ora.start(`Serving the project ${context.project}`);
 
-                        var angularJson: any = await this.loadJSON('angular.json');
-
                         console.log(angularJson);
                     
-                        var outputPath = angularJson.projects[context.project]
+                        var outputPath = angularJson.projects[context.project].architect.build.options.outputPath;
 
+                        console.log(outputPath);
+                    
                         await this.processCommand([`ng build ${context.project} --watch`], context);
 
                         //  Start the ng build watch

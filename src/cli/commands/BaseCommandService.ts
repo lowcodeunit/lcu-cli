@@ -131,6 +131,23 @@ export abstract class BaseCommandService {
         return value;
     }
 
+    protected async ensureInquiredOptions(value: string, propName: string, choices: string[], message: string = null) {
+        while (!value) {
+            var answs: any = await this.inquir([
+                {
+                    type: 'list',
+                    name: propName,
+                    message: message || `What is the ${propName}?`,
+                    choices: choices
+                }
+            ], `Issue loading ${propName}`);
+
+            value = answs[propName];
+        }
+
+        return value;
+    }
+
     protected async establishHeader() {
         this.clear();
 
@@ -258,11 +275,11 @@ export abstract class BaseCommandService {
                 });
     
                 proc.q.on('killed', (reason) => {
-                    ora.fail(`Command execution failed for ${command}: ${reason}`);
+                    this.Ora.fail(`Command execution failed for ${command}: ${reason}`);
                 });
     
                 proc.q.on('done', async () => {
-                    ora.succeed(`Successfully executed command: ${command}`);
+                    this.Ora.succeed(`Successfully executed command: ${command}`);
     
                     await this.processCommand(commands, context);
                     
@@ -270,10 +287,12 @@ export abstract class BaseCommandService {
                 });
     
                 proc.q.on('failed', () => {
-                    ora.fail(`Failed execution of command: ${command}`);
+                    this.Ora.fail(`Failed execution of command: ${command}`);
 
                     reject();
                 });
+                
+                ora.succeed(`Successfully started command: ${command}`);
             } else {
                 this.Ora.succeed(`All commands have been processed for template`);
 

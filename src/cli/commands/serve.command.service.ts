@@ -96,22 +96,10 @@ export class ServeCommandService extends BaseCommandService {
     }
 
     //  Helpers
-    protected processFileChange(filePath: string, host: string, app: string, outputPath: string, shouldDelete: boolean = false) {
-        var outCheck = outputPath.replace('/', '\\');
-
-        Logger.Basic(filePath);
-        
-        Logger.Basic(outCheck);
-        
-        filePath = filePath.replace(outCheck, '');
-
-        Logger.Basic(filePath);
-        
+    protected processFileChange(filePath: string, host: string, app: string, shouldDelete: boolean = false) {
         if (filePath.startsWith('\\'))
             filePath = filePath.substring(1);
 
-        Logger.Basic(filePath);
-        
         Logger.Basic(`Processing file change for ${filePath} to ${host}${app} as ${!shouldDelete ? 'upload' : 'delete'}`);
         
         if (host.indexOf('://') < 0)

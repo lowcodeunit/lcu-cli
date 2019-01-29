@@ -3,6 +3,7 @@ import { BaseCommandService } from './BaseCommandService';
 import { Command } from 'commander'
 import Chalk from 'chalk';
 import exeq from 'exeq';
+import chokidar from 'chokidar';
 import { AsyncHelpers } from '../../helpers/3rdparty-async';
 
 export class ServeCommandService extends BaseCommandService {
@@ -58,9 +59,23 @@ export class ServeCommandService extends BaseCommandService {
                     
                         await this.processCommand([`ng build ${context.project} --watch`], context);
 
-                        //  Start the ng build watch
-
                         //  Broadcast to dev-stream start of new app, so as to clear out all old dev-stream files for the app
+
+                        var watcher = chokidar.watch(outputPath, {ignored: /^\./, persistent: true});
+
+                        watcher
+                            .on('add', (path) => {
+                                console.log('File', path, 'has been added');
+                            })
+                            .on('change', (path) => {
+                                console.log('File', path, 'has been changed');
+                            })
+                            .on('unlink', (path) => {
+                                console.log('File', path, 'has been removed');
+                            })
+                            .on('error', (error) => {
+                                console.error('Error happened', error);
+                            });
 
                         //  Broadcast the files from output path to dev-stream
 

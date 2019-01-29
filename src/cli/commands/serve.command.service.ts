@@ -5,6 +5,8 @@ import Chalk from 'chalk';
 import exeq from 'exeq';
 import chokidar from 'chokidar';
 import { AsyncHelpers } from '../../helpers/3rdparty-async';
+import request from 'request';
+import { createReadStream } from 'fs-extra';
 
 export class ServeCommandService extends BaseCommandService {
     //  Fields
@@ -63,13 +65,13 @@ export class ServeCommandService extends BaseCommandService {
 
                         watcher
                             .on('add', (path) => {
-                                console.log('File', path, 'has been added');
+                                this.processFileChange(path, context.host, context.app, outputPath);
                             })
                             .on('change', (path) => {
-                                console.log('File', path, 'has been changed');
+                                this.processFileChange(path, context.host, context.app, outputPath);
                             })
                             .on('unlink', (path) => {
-                                console.log('File', path, 'has been removed');
+                                this.processFileChange(path, context.host, context.app, outputPath);
                             })
                             .on('error', (error) => {
                                 console.error('Error happened', error);
@@ -94,109 +96,38 @@ export class ServeCommandService extends BaseCommandService {
     }
 
     //  Helpers
-    protected async establishTemplatesRepo(repoTempPath: string, repo: string) {
-        return new Promise<{}>(async (resolve, reject) => {
-            var ora = this.Ora.start(`Loading Templates Repository '${repo}'`);
+    protected processFileChange(filePath: string, host: string, app: string, outputPath: string, shouldDelete: boolean = false) {
+        filePath = filePath.replace(outputPath, '');
 
-            await AsyncHelpers.rimraf(repoTempPath).catch(err => {
-                ora.fail(`Issue cleaning temp path @ '${Chalk.yellow(repoTempPath)}': ${Chalk.red(err)}`);
+        if (filePath.startsWith('\\'))
+            filePath = filePath.substring(1);
 
-                process.exit(1);
-
-                reject();
+        Logger.Basic(`Processing file change for ${filePath} to ${host}${app} as ${shouldDelete ? 'upload' : 'delete'}`);
+        
+        var url = `${host}${app}`;
+        
+        if (!shouldDelete) {
+            var req = request.post(url, function (err, resp, body) {
+                if (err) {
+                    console.log('Error!');
+                } else {
+                    console.log('URL: ' + body);
+                }
             });
 
-            await AsyncHelpers.downloadGit(repo, repoTempPath).catch((err) => {
-                ora.fail(`Template loading failed with: \n\t${Chalk.red(err)}`);
+          var form = req.form();
 
-                process.exit(1);
-
-                reject();
+          form.append('file', createReadStream(filePath));
+        } else {
+            url += `?deletePath=${filePath}`
+            
+            var req = request.delete(url, function (err, resp, body) {
+                if (err) {
+                    console.log('Error!');
+                } else {
+                    console.log('URL: ' + body);
+                }
             });
-
-            ora.succeed(`Loaded Templates to '${repoTempPath}'`);
-
-            resolve();
-        });
-    }
-
-    protected async processTemplates(context: any, subPath: string) {
-        var templatesRepoPath = this.pathJoin(this.tempFiles, 'repos', context.repo);
-
-        var source = this.pathJoin(templatesRepoPath, subPath);
-
-        await this.processTemplateCommands(source, context);
-    }
-
-    protected async upgradeLCUPackages(scopes: string[], version: string) {
-        return new Promise<{}>(async (resolve, reject) => {
-            var packageJSON = await this.loadJSON('package.json');
-
-            var deps: [] = packageJSON.dependencies || [];
-
-            var devDeps: [] = packageJSON.devDependencies || [];
-
-            var lcuUpgradeCommands = [];
-
-            var depsUpgradeCommands = Object.keys(deps).map(depKey => {
-                var dep = deps[depKey];
-
-                if (scopes.some(v => depKey.startsWith(v)))
-                    return `${depKey}@${version}`;
-                else
-                    return null;
-            }).filter(d => d != null);
-
-            if (depsUpgradeCommands && depsUpgradeCommands.length > 0) 
-                lcuUpgradeCommands.push(`npm i ${depsUpgradeCommands.join(' ')} --save`);
-
-            var devDepsUpgradeCommands = Object.keys(devDeps).map(depKey => {
-                var dep = deps[depKey];
-
-                if (scopes.some(v => depKey.startsWith(v)))
-                    return `${depKey}@${version}`;
-                else
-                    return null;
-            }).filter(d => d != null);
-
-            if (devDepsUpgradeCommands && devDepsUpgradeCommands.length > 0) 
-                lcuUpgradeCommands.push(`npm i ${devDepsUpgradeCommands.join(' ')} --save-dev`);
-
-            if (lcuUpgradeCommands.length > 0) {
-                var upgrade = lcuUpgradeCommands.join(' && ');
-
-                Logger.Basic(`Executing upgrade command '${upgrade}'...`);
-
-                var proc = exeq(upgrade);
-
-                proc.q.on('stdout', (data) => {
-                    Logger.Basic(data);
-                });
-
-                proc.q.on('stderr', (data) => {
-                    Logger.Basic(data);
-                });
-
-                proc.q.on('killed', (reason) => {
-                    Logger.Basic(`Killed upgrade command '${upgrade}'!`);
-                });
-
-                proc.q.on('done', async () => {
-                    Logger.Basic(`Executed upgrade command '${upgrade}'!`);
-
-                    resolve();
-                });
-
-                proc.q.on('failed', () => {
-                    Logger.Basic(`Failed upgrade command '${upgrade}'!`);
-
-                    reject();
-                });
-            } else {
-                Logger.Basic(`Executed upgrade command !`);
-
-                resolve();
-            }
-        });
+        }
     }
 }

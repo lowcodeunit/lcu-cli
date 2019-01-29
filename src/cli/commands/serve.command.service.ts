@@ -79,7 +79,7 @@ export class ServeCommandService extends BaseCommandService {
 
                         //  Start a watch listener on the output path of project to stream all changes up the dev-stream
 
-                        await this.processCommand([`concurrently "ng build ${context.project} --watch"`], context);
+                        // await this.processCommand([`ng build ${context.project} --watch`], context);
 
                         ora.succeed('Completed serving of the project');
                     } catch (err) {

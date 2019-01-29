@@ -7,6 +7,7 @@ import chokidar from 'chokidar';
 import { AsyncHelpers } from '../../helpers/3rdparty-async';
 import request from 'request';
 import { createReadStream } from 'fs-extra';
+import recursive from 'recursive-readdir';
 
 export class ServeCommandService extends BaseCommandService {
     //  Fields
@@ -57,9 +58,15 @@ export class ServeCommandService extends BaseCommandService {
 
                         var outputPath = angularJson.projects[context.project].architect.build.options.outputPath;
 
-                        Logger.Basic(outputPath);
-                    
                         //  Broadcast to dev-stream start of new app, so as to clear out all old dev-stream files for the app
+
+                        recursive(outputPath, function (err, files) {
+                            files.forEach(file => {
+                                this.processFileChange(file, context.host, context.app);
+                            });  
+                        });
+
+                        Logger.Basic('Initial files loaded to dev-stream')
 
                         var watcher = chokidar.watch(outputPath, {persistent: true});
 
@@ -76,10 +83,6 @@ export class ServeCommandService extends BaseCommandService {
                             .on('error', (error) => {
                                 console.error('Error happened', error);
                             });
-
-                        //  Broadcast the files from output path to dev-stream
-
-                        //  Start a watch listener on the output path of project to stream all changes up the dev-stream
 
                         // await this.processCommand([`ng build ${context.project} --watch`], context);
 

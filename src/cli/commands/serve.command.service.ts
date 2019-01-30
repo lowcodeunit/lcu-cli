@@ -99,7 +99,7 @@ export class ServeCommandService extends BaseCommandService {
     }
 
     //  Helpers
-    protected processFileChange(filePath: string, host: string, app: string, shouldDelete: boolean = false) {
+    protected processFileChange(filePath: string, host: string, app: string, outputPath: string, shouldDelete: boolean = false) {
         if (filePath.startsWith('\\'))
             filePath = filePath.substring(1);
 
@@ -111,10 +111,16 @@ export class ServeCommandService extends BaseCommandService {
         var url = `${host}${app}`;
         
         if (!shouldDelete) {
+            var dsFilePath = filePath.replace(outputPath.replace("/", "\\"), '');
+
+            if (dsFilePath.startsWith('\\'))
+            dsFilePath = dsFilePath.substring(1);
+
             var req = request.post({
                 url: url,
                 headers: {
-                    'f-dev-stream': 'future-auth-key??'
+                    'f-dev-stream': 'future-auth-key??',
+                    'f-dev-stream-file-path': dsFilePath
                 }
               }, function (err, resp, body) {
                 if (err) {

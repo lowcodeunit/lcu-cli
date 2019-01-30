@@ -72,13 +72,13 @@ export class ServeCommandService extends BaseCommandService {
 
                         watcher
                             .on('add', (path) => {
-                                this.processFileChange(path, context.host, context.app);
+                                this.processFileChange(path, context.host, context.app, outputPath);
                             })
                             .on('change', (path) => {
-                                this.processFileChange(path, context.host, context.app);
+                                this.processFileChange(path, context.host, context.app, outputPath);
                             })
                             .on('unlink', (path) => {
-                                this.processFileChange(path, context.host, context.app);
+                                this.processFileChange(path, context.host, context.app, outputPath);
                             })
                             .on('error', (error) => {
                                 console.error('Error happened', error);
@@ -110,12 +110,12 @@ export class ServeCommandService extends BaseCommandService {
         
         var url = `${host}${app}`;
         
-        if (!shouldDelete) {
-            var dsFilePath = filePath.replace(outputPath.replace("/", "\\"), '');
+        var dsFilePath = filePath.replace(outputPath.replace("/", "\\"), '');
 
-            if (dsFilePath.startsWith('\\'))
+        if (dsFilePath.startsWith('\\'))
             dsFilePath = dsFilePath.substring(1);
 
+        if (!shouldDelete) {
             var req = request.post({
                 url: url,
                 headers: {
@@ -139,7 +139,8 @@ export class ServeCommandService extends BaseCommandService {
             var req = request.delete({
                 url: url,
                 headers: {
-                  'f-dev-stream': 'future-auth-key??'
+                  'f-dev-stream': 'future-auth-key??',
+                  'f-dev-stream-file-path': dsFilePath
                 }
               }, function (err, resp, body) {
                 if (err) {

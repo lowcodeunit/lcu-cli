@@ -39,6 +39,8 @@ export class SolutionCommandService extends BaseCommandService {
                         template: options.template || null
                     };
 
+                    Logger.Basic(context);
+
                     context.name = await this.ensureName(context.name);
 
                     context.projectName = await this.ensureInquired(context.projectName, 'project');

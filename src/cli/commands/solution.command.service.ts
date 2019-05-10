@@ -33,8 +33,8 @@ export class SolutionCommandService extends BaseCommandService {
 
                     var context: any = {
                         name: name,
-                        path: options.path || 'lib/elements',
                         export: options.export || 'src/lcu.api.ts',
+                        path: options.path || 'lib/elements',
                         projectName: options.project || 'common',
                         template: options.template || null
                     };

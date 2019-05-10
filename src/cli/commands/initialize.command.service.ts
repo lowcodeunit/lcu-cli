@@ -32,8 +32,8 @@ export class InitializeCommandService extends BaseCommandService {
                     var context = {
                         projectsPath: options.projectsPath || 'projects',
                         repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
-                        scope: options.scope || "",
-                        workspace: options.workspace || 'workspace',
+                        scope: options.scope,
+                        workspace: options.workspace,
                     };
 
                     try {

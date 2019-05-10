@@ -33,7 +33,7 @@ export class SolutionCommandService extends BaseCommandService {
 
                     var context: any = {
                         name: name,
-                        path: options.path || 'lib',
+                        path: options.path || 'lib/elements',
                         export: options.export || 'src/lcu.api.ts',
                         projectName: options.project,
                         template: options.template || null
@@ -41,7 +41,7 @@ export class SolutionCommandService extends BaseCommandService {
 
                     context.name = await this.ensureName(context.name);
 
-                    context.projectName = await this.ensureInquired(context.projectName, 'projectName');
+                    context.projectName = await this.ensureInquired(context.projectName, 'project');
 
                     try {
                         var lcuConfig = await this.loadLCUConfig();

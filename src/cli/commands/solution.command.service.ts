@@ -18,7 +18,7 @@ export class SolutionCommandService extends BaseCommandService {
     public async Setup(program: Command): Promise<Command> {
         return program
             .command('solution [name]')
-            .alias('el')
+            .alias('sln')
             .description('Initialize an LCU Solution from core templates.')
             .option('-p|--project <project>', 'The project to add the Solution to.')
             .option('-e|--export <export>', 'The export file within a project to add the Solution to.')

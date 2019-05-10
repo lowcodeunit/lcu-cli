@@ -39,7 +39,7 @@ export class InitializeCommandService extends BaseCommandService {
                     try {
                         context.scope = await this.ensureInquired(context.scope, 'scope');
     
-                        context.workspace = await this.ensureInquired(context.scope, 'workspace');
+                        context.workspace = await this.ensureInquired(context.workspace, 'workspace');
     
                         var repoTempPath = this.pathJoin(this.tempFiles, 'repos', context.repo);
 

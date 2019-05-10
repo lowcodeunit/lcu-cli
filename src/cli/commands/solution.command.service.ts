@@ -35,7 +35,7 @@ export class SolutionCommandService extends BaseCommandService {
                         name: name,
                         path: options.path || 'lib/elements',
                         export: options.export || 'src/lcu.api.ts',
-                        projectName: options.project,
+                        projectName: options.project || 'common',
                         template: options.template || null
                     };
 

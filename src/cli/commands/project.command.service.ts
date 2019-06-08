@@ -43,6 +43,8 @@ export class ProjectCommandService extends BaseCommandService {
 
             var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'project');
 
+            Logger.Basic(`Template repo ${templateRepoPath}`);
+
             var answers = await this.inquir(templateRepoPath);
 
             context = await this.mergeObjects(context, answers);
@@ -50,6 +52,8 @@ export class ProjectCommandService extends BaseCommandService {
             answers = await this.processTemplateInquiries(templateRepoPath, context);
 
             context = await this.mergeObjects(context, answers);
+
+            Logger.Basic(`Inqueries processed`);
 
             await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
 

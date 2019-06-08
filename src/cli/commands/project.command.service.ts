@@ -39,6 +39,8 @@ export class ProjectCommandService extends BaseCommandService {
           try {
             var lcuConfig = await this.loadLCUConfig();
 
+            Logger.Basic(`LCU Config Loaded`);
+
             var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'project');
 
             var answers = await this.inquir(templateRepoPath);

@@ -1,105 +1,110 @@
 import { Logger } from './../../logging/logger';
 import { BaseCommandService } from './BaseCommandService';
-import { Command } from 'commander'
+import { Command } from 'commander';
 
 export class ProjectCommandService extends BaseCommandService {
-    //  Fields
+  //  Fields
 
-    //  Properties
+  //  Properties
 
-    //  Constructors
-    constructor() {
-        super();
-    }
+  //  Constructors
+  constructor() {
+    super();
+  }
 
-    //  API Methods
-    public async Setup(program: Command): Promise<Command> {
-        return program
-            .command('project [project-name]')
-            .alias('proj')
-            .description('Initialize an LCU project from core templates or custom template directories.')
-            .action(async (projectName: string, options: any) => {
-                if (!(await this.isLcuInitialized())) {
-                    this.establishSectionHeader('LCU must be Initialized', 'yellow');
+  //  API Methods
+  public async Setup(program: Command): Promise<Command> {
+    return program
+      .command('project [project-name]')
+      .alias('proj')
+      .description('Initialize an LCU project from core templates or custom template directories.')
+      .option('-t|--template <template>', 'The path to use for projects working directory (default: projects).')
+      .action(async (projectName: string, options: any) => {
+        if (!(await this.isLcuInitialized())) {
+          this.establishSectionHeader('LCU must be Initialized', 'yellow');
 
-                    this.establishNextSteps(['Initialize the LCU:', 'lcu init'])
-                } else {
-                    this.establishSectionHeader('Project Setup');
+          this.establishNextSteps(['Initialize the LCU:', 'lcu init']);
+        } else {
+          this.establishSectionHeader('Project Setup');
 
-                    var context: any = {
-                        projectName: projectName,
-                        template: null
-                    };
-                    
-                    context.projectName = await this.ensureProjectName(context.projectName);
+          var context: any = {
+            projectName: projectName,
+            template: options.template || null
+          };
 
-                    try {
-                        var lcuConfig = await this.loadLCUConfig();
-                        
-                        var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'project')
-                        
-                        var answers = await this.inquir(templateRepoPath);
+          context.projectName = await this.ensureProjectName(context.projectName);
 
-                        context = await this.mergeObjects(context, answers);
+          try {
+            var lcuConfig = await this.loadLCUConfig();
 
-                        answers = await this.processTemplateInquiries(templateRepoPath, context);
+            var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'project');
 
-                        context = await this.mergeObjects(context, answers);
+            var answers = await this.inquir(templateRepoPath);
 
-                        await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
+            context = await this.mergeObjects(context, answers);
 
-                        this.Ora.succeed(`Completed setup for project ${context.projectName}.`);
-                    } catch (err) {
-                        this.Ora.fail(`Issue establishing project: \r\n${err}`);
+            answers = await this.processTemplateInquiries(templateRepoPath, context);
 
-                        process.exit(1);
-                    }
-                }
-            });
-    }
+            context = await this.mergeObjects(context, answers);
 
-    //  Helpers
-    protected async ensureProjectName(projectName: string) {
-        while (!projectName) {
-            var answs: any = await this.inquir([
-                {
-                    type: 'input',
-                    name: 'projectName',
-                    message: 'What is the project name?'
-                }
-            ], 'Issue loading project name');
+            await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
 
-            projectName = answs.projectName;
+            this.Ora.succeed(`Completed setup for project ${context.projectName}.`);
+          } catch (err) {
+            this.Ora.fail(`Issue establishing project: \r\n${err}`);
+
+            process.exit(1);
+          }
         }
+      });
+  }
 
-        return projectName;
+  //  Helpers
+  protected async ensureProjectName(projectName: string) {
+    while (!projectName) {
+      var answs: any = await this.inquir(
+        [
+          {
+            type: 'input',
+            name: 'projectName',
+            message: 'What is the project name?'
+          }
+        ],
+        'Issue loading project name'
+      );
+
+      projectName = answs.projectName;
     }
 
-    protected async processTemplateInquiries(templatesRepoPath: string, context: any) {
-        var cliConfig = await this.loadCLIConfig();
+    return projectName;
+  }
 
-        var questions = [
-            {
-                type: 'list',
-                name: 'template',
-                message: `Choose ${cliConfig.Projects.Title}:`,
-                choices: cliConfig.Projects.Options
-            }
-        ];
+  protected async processTemplateInquiries(templatesRepoPath: string, context: any) {
+    var cliConfig = await this.loadCLIConfig();
 
-        var setupQuestions: any = await this.loadTemplateInquirerQuestions(templatesRepoPath);
+    var questions = [];
 
-        if (setupQuestions && setupQuestions.length > 0)
-            questions.push(...setupQuestions)
-
-        var answers: any = await this.inquir(questions);
-
-        var repoTemplateTempPath = this.pathJoin(templatesRepoPath, answers.template);
-
-        var templateAnswers: any = await this.inquir(repoTemplateTempPath);
-
-        answers = await this.mergeObjects(answers, templateAnswers);
-
-        return answers
+    if (!context.template) {
+      questions.push({
+        type: 'list',
+        name: 'template',
+        message: `Choose ${cliConfig.Projects.Title}:`,
+        choices: cliConfig.Projects.Options
+      });
     }
+
+    var setupQuestions: any = await this.loadTemplateInquirerQuestions(templatesRepoPath);
+
+    if (setupQuestions && setupQuestions.length > 0) questions.push(...setupQuestions);
+
+    var answers: any = await this.inquir(questions);
+
+    var repoTemplateTempPath = this.pathJoin(templatesRepoPath, answers.template);
+
+    var templateAnswers: any = await this.inquir(repoTemplateTempPath);
+
+    answers = await this.mergeObjects(answers, templateAnswers);
+
+    return answers;
+  }
 }

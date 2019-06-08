@@ -107,7 +107,7 @@ export class ProjectCommandService extends BaseCommandService {
 
     var answers: any = await this.inquir(questions);
 
-    var repoTemplateTempPath = this.pathJoin(templatesRepoPath, answers.template);
+    var repoTemplateTempPath = this.pathJoin(templatesRepoPath, answers.template || context.template);
 
     var templateAnswers: any = await this.inquir(repoTemplateTempPath);
 

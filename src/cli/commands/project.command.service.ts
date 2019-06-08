@@ -34,6 +34,8 @@ export class ProjectCommandService extends BaseCommandService {
 
           context.projectName = await this.ensureProjectName(context.projectName);
 
+          Logger.Basic(`Project: ${context.projectName} on ${context.template}`);
+
           try {
             var lcuConfig = await this.loadLCUConfig();
 

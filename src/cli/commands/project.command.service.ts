@@ -19,6 +19,7 @@ export class ProjectCommandService extends BaseCommandService {
       .alias('proj')
       .description('Initialize an LCU project from core templates or custom template directories.')
       .option('-t|--template <template>', 'The path to use for projects working directory (default: projects).')
+      .option('-iw|--initWith [initWith]', 'The init with value.')
       .action(async (projectName: string, options: any) => {
         if (!(await this.isLcuInitialized())) {
           this.establishSectionHeader('LCU must be Initialized', 'yellow');
@@ -29,7 +30,8 @@ export class ProjectCommandService extends BaseCommandService {
 
           var context: any = {
             projectName: projectName,
-            template: options.template || null
+            template: options.template || null,
+            initWith: options.initWith || null
           };
 
           context.projectName = await this.ensureProjectName(context.projectName);

@@ -175,7 +175,7 @@ export abstract class BaseCommandService {
     Logger.Basic(ques);
 
     if (options) {
-      ques = ques.filter(q => !!options[q.name]);
+      ques = ques.filter(q => !options[q.name]);
     }
 
     Logger.Basic(ques);

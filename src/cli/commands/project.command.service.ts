@@ -107,7 +107,7 @@ export class ProjectCommandService extends BaseCommandService {
 
     if (setupQuestions && setupQuestions.length > 0) questions.push(...setupQuestions);
 
-    var answers: any = await this.inquir(questions);
+    var answers: any = await this.inquir(questions, context);
 
     var repoTemplateTempPath = this.pathJoin(templatesRepoPath, answers.template || context.template);
 

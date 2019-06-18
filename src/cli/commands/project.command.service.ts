@@ -45,7 +45,7 @@ export class ProjectCommandService extends BaseCommandService {
 
             Logger.Basic(`Template repo ${templateRepoPath}`);
 
-            var answers = await this.inquir(templateRepoPath);
+            var answers = await this.inquir(templateRepoPath, context);
 
             context = await this.mergeObjects(context, answers);
 

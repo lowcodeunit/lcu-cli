@@ -111,7 +111,7 @@ export class ProjectCommandService extends BaseCommandService {
 
     var repoTemplateTempPath = this.pathJoin(templatesRepoPath, answers.template || context.template);
 
-    var templateAnswers: any = await this.inquir(repoTemplateTempPath);
+    var templateAnswers: any = await this.inquir(repoTemplateTempPath, context);
 
     answers = await this.mergeObjects(answers, templateAnswers);
 

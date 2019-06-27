@@ -170,15 +170,9 @@ export abstract class BaseCommandService {
 
     var ques = <ReadonlyArray<Question>>questions;
 
-    Logger.Basic(options);
-    
-    Logger.Basic(ques);
-
     if (options) {
       ques = ques.filter(q => !options[q.name]);
     }
-
-    Logger.Basic(ques);
 
     return await inquirer.prompt(ques).catch(err => {
       this.Ora.fail(errMsg || err);

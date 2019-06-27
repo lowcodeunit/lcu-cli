@@ -51,8 +51,6 @@ export class ServeCommandService extends BaseCommandService {
                     
                     context.app = await this.ensureInquired(context.app, "application");
 
-                    Logger.Basic(context);
-                    
                     try {
                         var ora = this.Ora.start(`Serving the project ${context.project}`);
 

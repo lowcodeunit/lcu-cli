@@ -34,6 +34,7 @@ export class ProjectCommandService extends BaseCommandService {
             initWith: options.initWith || null
           };
 
+          
           context.projectName = await this.ensureProjectName(context.projectName);
 
           Logger.Basic(`Project: ${context.projectName} on ${context.template}`);

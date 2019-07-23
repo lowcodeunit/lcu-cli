@@ -46,7 +46,7 @@ export class ElementCommandService extends BaseCommandService {
                     try {
                         var lcuConfig = await this.loadLCUConfig();
 
-                        var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'element')
+                        var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.workspace, 'element')
 
                         var answers = await this.inquir(templateRepoPath);
 

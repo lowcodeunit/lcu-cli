@@ -46,7 +46,7 @@ export class SolutionCommandService extends BaseCommandService {
                     try {
                         var lcuConfig = await this.loadLCUConfig();
 
-                        var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'solution')
+                        var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.workspace, 'solution')
 
                         var answers = await this.inquir(templateRepoPath);
 

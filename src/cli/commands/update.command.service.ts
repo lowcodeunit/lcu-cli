@@ -34,14 +34,14 @@ export class UpdateCommandService extends BaseCommandService {
                     var lcuConfig = await this.loadLCUConfig();
 
                     var context = {
-                        repo: options.repository || lcuConfig.templates.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
+                        repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',//lcuConfig.templates.workspace || 
                         scopes: options.scope ? options.scope.split(',') : ['@lcu', '@lowcodeunit'],
                         version: options.verTo || 'latest'
                     };
 
                     console.log(context);
                     
-                    lcuConfig.templates.repository = context.repo;
+                    lcuConfig.templates.workspace = context.repo;
 
                     try {
                         await this.saveLCUConfig(lcuConfig);

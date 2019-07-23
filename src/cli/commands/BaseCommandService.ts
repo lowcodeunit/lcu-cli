@@ -203,7 +203,7 @@ export abstract class BaseCommandService {
     } else {
       var lcuConfig = await this.loadLCUConfig();
 
-      var templatesRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository);
+      var templatesRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.workspace);
 
       return await this.loadCLIConfig(templatesRepoPath);
     }

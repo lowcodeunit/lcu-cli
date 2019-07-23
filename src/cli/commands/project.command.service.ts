@@ -34,7 +34,7 @@ export class ProjectCommandService extends BaseCommandService {
             initWith: options.initWith || null
           };
 
-          
+
           context.projectName = await this.ensureProjectName(context.projectName);
 
           Logger.Basic(`Project: ${context.projectName} on ${context.template}`);
@@ -44,7 +44,7 @@ export class ProjectCommandService extends BaseCommandService {
 
             Logger.Basic(`LCU Config Loaded`);
 
-            var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'project');
+            var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.workspace, 'project');
 
             Logger.Basic(`Template repo ${templateRepoPath}`);
 

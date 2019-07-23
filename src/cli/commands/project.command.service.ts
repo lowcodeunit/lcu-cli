@@ -45,7 +45,7 @@ export class ProjectCommandService extends BaseCommandService {
 
             Logger.Basic(lcuConfig);
             
-            var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.workspace, 'project');
+            var templateRepoPath = this.pathJoin(this.tempFiles, 'repos', lcuConfig.templates.repository, 'project');
 
             Logger.Basic(`Template repo ${templateRepoPath}`);
 

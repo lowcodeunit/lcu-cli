@@ -40,6 +40,8 @@ export class ProjectCommandService extends BaseCommandService {
           Logger.Basic(`Project: ${context.projectName} on ${context.template}`);
 
           try {
+            Logger.Basic(`LCU Config Loading...`);
+            
             var lcuConfig = await this.loadLCUConfig();
 
             Logger.Basic(`LCU Config Loaded`);

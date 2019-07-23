@@ -44,6 +44,8 @@ export class ProjectCommandService extends BaseCommandService {
 
             Logger.Basic(`LCU Config Loaded`);
             
+            Logger.Basic(`Checkin...`);
+            
             Logger.Basic(lcuConfig);
             
             Logger.Basic(this.tempFiles);

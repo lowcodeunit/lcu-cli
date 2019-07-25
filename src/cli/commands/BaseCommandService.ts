@@ -308,7 +308,7 @@ export abstract class BaseCommandService {
         proc.q.on('failed', () => {
           this.Ora.fail(`Failed execution of command: ${command}`);
 
-          reject();
+          reject(proc.stderr);
         });
 
         ora.succeed(`Successfully started command: ${command}`);

@@ -273,6 +273,11 @@ export abstract class BaseCommandService {
 
   protected processCommand(commands: string[], context: any): Promise<void> {
     return new Promise((resolve, reject) => {
+      Logger.Basic(`shannon commands ${commands}`);
+      Logger.Basic(`shannon context ${context}`);
+      Logger.Basic(`shannon resolve ${resolve}`);
+      Logger.Basic(`shannon reject ${reject}`);
+
       if (commands && commands.length > 0) {
         var command = commands.shift();
 

@@ -60,6 +60,8 @@ export abstract class BaseCommandService {
   }
 
   protected async compileTemplateFromPath(context: any, ...filePaths: string[]) {
+    Logger.Basic(`======= shannon ======= base compileTemplateFromPath context ${JSON.stringify(context)}`);
+    Logger.Basic(`======= shannon ======= base compileTemplateFromPath filePaths ${JSON.stringify(filePaths)}`);
     var fileContent = await this.loadFile(this.pathJoin(...filePaths));
 
     return await this.compileTemplate(fileContent, context);
@@ -262,6 +264,9 @@ export abstract class BaseCommandService {
   protected async processTemplateCommands(templateSourcePath: string, context: any) {
     var ora = this.Ora.start(`Loading commands ...`);
 
+    Logger.Basic(`======= shannon ======= base processTemplateCommands templateSourcePath ${templateSourcePath}`);
+    Logger.Basic(`======= shannon ======= base processTemplateCommands this.SysPath ${this.SysPath}`);
+
     var commandsFile = await this.compileTemplateFromPath(context, this.pathJoin(templateSourcePath, this.SysPath, 'commands.json'));
 
     var commands = <string[]>JSON.parse(commandsFile);
@@ -273,21 +278,19 @@ export abstract class BaseCommandService {
 
   protected processCommand(commands: string[], context: any): Promise<void> {
     return new Promise((resolve, reject) => {
-      Logger.Basic(`shannon commands ${commands}`);
-      Logger.Basic(`shannon context ${JSON.stringify(context)}`);
-      Logger.Basic(`shannon resolve ${resolve}`);
-      Logger.Basic(`shannon reject ${reject}`);
+      Logger.Basic(`======= shannon ======= base commands ${commands}`);
+      Logger.Basic(`======= shannon ======= base context ${JSON.stringify(context)}`);
 
       if (commands && commands.length > 0) {
         var command = commands.shift();
 
         var ora = this.Ora.start(`Executing command: ${command}`);
-        Logger.Basic(`shannon command ${command}`);
+        Logger.Basic(`======= shannon ======= base start command ${command}`);
 
         var proc = exeq(command);
 
         proc.q.on('stdout', data => {
-          Logger.Basic(`shannon stdout data ${data}`);
+          Logger.Basic(`======= shannon ======= stdout data ${data}`);
         });
 
         proc.q.on('stderr', data => {
@@ -296,7 +299,7 @@ export abstract class BaseCommandService {
 
         proc.q.on('killed', reason => {
           this.Ora.fail(`Command execution failed for ${command}: ${reason}`);
-          Logger.Basic(`shannon killed reason ${reason}`);
+          Logger.Basic(`======= shannon ======= killed reason ${reason}`);
         });
 
         proc.q.on('done', async () => {
@@ -309,7 +312,7 @@ export abstract class BaseCommandService {
 
         proc.q.on('failed', () => {
           this.Ora.fail(`Failed execution of command: ${command}`);
-          Logger.Basic(`shannon failed ${proc.stderr}`);
+          Logger.Basic(`======= shannon ======= failed ${proc.stderr}`);
           reject(proc.stderr);
         });
 

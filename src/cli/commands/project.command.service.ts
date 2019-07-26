@@ -60,9 +60,13 @@ export class ProjectCommandService extends BaseCommandService {
             Logger.Basic(`Inqueries processed`);
 
             await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
+            Logger.Basic(`shannon processTemplateCommands ${templateRepoPath}`);
+            Logger.Basic(`shannon context.template ${context.template}`);
+            Logger.Basic(`shannon context ${context}`);
 
             this.Ora.succeed(`Completed setup for project ${context.projectName}.`);
           } catch (err) {
+            Logger.Basic(`shannon err ${err}`);
             this.Ora.fail(`Issue establishing project: \r\n${err}`);
 
             process.exit(1);

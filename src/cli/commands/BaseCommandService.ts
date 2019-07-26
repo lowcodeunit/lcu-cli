@@ -274,7 +274,7 @@ export abstract class BaseCommandService {
   protected processCommand(commands: string[], context: any): Promise<void> {
     return new Promise((resolve, reject) => {
       Logger.Basic(`shannon commands ${commands}`);
-      Logger.Basic(`shannon context ${context}`);
+      Logger.Basic(`shannon context ${JSON.stringify(context)}`);
       Logger.Basic(`shannon resolve ${resolve}`);
       Logger.Basic(`shannon reject ${reject}`);
 
@@ -282,11 +282,12 @@ export abstract class BaseCommandService {
         var command = commands.shift();
 
         var ora = this.Ora.start(`Executing command: ${command}`);
+        Logger.Basic(`shannon command ${command}`);
 
         var proc = exeq(command);
 
         proc.q.on('stdout', data => {
-          // Logger.Basic(data);
+          Logger.Basic(`shannon stdout data ${data}`);
         });
 
         proc.q.on('stderr', data => {
@@ -295,6 +296,7 @@ export abstract class BaseCommandService {
 
         proc.q.on('killed', reason => {
           this.Ora.fail(`Command execution failed for ${command}: ${reason}`);
+          Logger.Basic(`shannon killed reason ${reason}`);
         });
 
         proc.q.on('done', async () => {
@@ -307,7 +309,7 @@ export abstract class BaseCommandService {
 
         proc.q.on('failed', () => {
           this.Ora.fail(`Failed execution of command: ${command}`);
-
+          Logger.Basic(`shannon failed ${proc.stderr}`);
           reject(proc.stderr);
         });
 

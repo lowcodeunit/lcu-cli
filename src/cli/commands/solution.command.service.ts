@@ -23,7 +23,6 @@ export class SolutionCommandService extends BaseCommandService {
             .option('-p|--project <project>', 'The project to add the Solution to.')
             .option('-e|--export <export>', 'The export file within a project to add the Solution to.')
             .option('--path <path>', 'The path within a project to add the Solution to.')
-            .option('--docs <docs>', 'Whether or not to add docs to the base of the project.')
             .action(async (name: string, options: any) => {
                 if (!(await this.isLcuInitialized())) {
                     this.establishSectionHeader('LCU must be Initialized', 'yellow');
@@ -37,7 +36,6 @@ export class SolutionCommandService extends BaseCommandService {
                         export: options.export || 'src/lcu.api.ts',
                         path: options.path || 'lib/elements',
                         projectName: options.project || 'common',
-                        docs: options.docs || false,
                         template: options.template || null
                     };
 

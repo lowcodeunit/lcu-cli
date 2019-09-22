@@ -23,6 +23,7 @@ export class InitializeCommandService extends BaseCommandService {
             .option('-p|--projects-path <path>', 'The path to use for projects working directory (default: projects).')
             .option('-w|--workspace <workspace>', 'The name of the workspce to use.')
             .option('-s|--scope <scope>', 'The @scope to use for package names.')
+            .option('-d|--docs <docs>', 'Whether or not to add docs to the base of the project.')
             .action(async (options: any) => {
                 if (await this.isLcuInitialized())
                     this.establishSectionHeader('LCU Already Initialized', 'yellow');
@@ -34,6 +35,7 @@ export class InitializeCommandService extends BaseCommandService {
                         repo: options.repository || 'lowcodeunit-devkit/lcu-cli-templates-core',
                         scope: options.scope,
                         workspace: options.workspace,
+                        docs: options.docs || false,
                     };
 
                     try {

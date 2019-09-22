@@ -273,15 +273,16 @@ export abstract class BaseCommandService {
 
   protected processCommand(commands: string[], context: any): Promise<void> {
     return new Promise((resolve, reject) => {
+
       if (commands && commands.length > 0) {
         var command = commands.shift();
 
         var ora = this.Ora.start(`Executing command: ${command}`);
-
+ 
         var proc = exeq(command);
 
         proc.q.on('stdout', data => {
-          // Logger.Basic(data);
+
         });
 
         proc.q.on('stderr', data => {
@@ -302,7 +303,6 @@ export abstract class BaseCommandService {
 
         proc.q.on('failed', () => {
           this.Ora.fail(`Failed execution of command: ${command}`);
-
           reject(proc.stderr);
         });
 

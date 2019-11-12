@@ -264,6 +264,8 @@ export abstract class BaseCommandService {
 
     var commandsFile = await this.compileTemplateFromPath(context, this.pathJoin(templateSourcePath, this.SysPath, 'commands.json'));
 
+    ora.succeed(`BOBBY - Testing change to template files`);
+
     var commands = <string[]>JSON.parse(commandsFile);
 
     ora.succeed(`Loaded commands`);

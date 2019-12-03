@@ -23,6 +23,7 @@ export class SolutionCommandService extends BaseCommandService {
             .option('-p|--project <project>', 'The project to add the Solution to.')
             .option('-e|--export <export>', 'The export file within a project to add the Solution to.')
             .option('-m|--module <module>', 'The module within a project to add the Solution to.')
+            .option('-b|--disableLcuBootstrap <disableLcuBootstrap>', 'Whether or not to add custom bootstrap method to application.')
             .option('--path <path>', 'The path within a project to add the Solution to.')
             .action(async (name: string, options: any) => {
                 if (!(await this.isLcuInitialized())) {
@@ -34,6 +35,7 @@ export class SolutionCommandService extends BaseCommandService {
 
                     var context: any = {
                         name: name,
+                        disableLcuBootstrap: options.disableLcuBootstrap || false,
                         export: options.export || 'src/lcu.api.ts',
                         module: options.module || 'app.module.ts',
                         path: options.path || 'lib/elements',

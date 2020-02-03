@@ -2,7 +2,7 @@ import Chalk from 'chalk';
 import { AsyncHelpers } from '../../helpers/3rdparty-async';
 import { Logger } from '../../logging/logger';
 import { BaseCommandService } from './BaseCommandService';
-import { Command } from 'commander'
+import { Command } from 'commander';
 
 export class SolutionCommandService extends BaseCommandService {
     //  Fields

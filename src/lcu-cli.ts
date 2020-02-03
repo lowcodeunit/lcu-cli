@@ -10,6 +10,7 @@ import { ProjectCommandService } from './cli/commands/project.command.service';
 import { ServeCommandService } from './cli/commands/serve.command.service';
 import { UpdateCommandService } from './cli/commands/update.command.service';
 import { SolutionCommandService } from './cli/commands/solution.command.service';
+import { DocumentationCommandService } from './cli/commands/documentation.command.service';
 
 var logger = new Logger();
 
@@ -31,6 +32,8 @@ var logger = new Logger();
     commands.push(new UpdateCommandService());
 
     commands.push(new DAFCommandService());
+
+    commands.push(new DocumentationCommandService());
 
     await cli.SetupCLI(commands);
 

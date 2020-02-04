@@ -14,6 +14,7 @@ export class DocumentationCommandService extends BaseCommandService {
             .description('Initialize a basic documentation structure with the LCU-Documentation library.')
             .option('-p|--project <project>', 'The project to add the documentation files to.')
             .option('-m|--module <module>', 'The module within a project to add the documentation module to.')
+            .option('-iw|--initWith [initWith]', 'The initialization type to specify a set of docs to create.')
             .option('--path <path>', 'The path within a project to add the documentation files to.')
             .action(async (name: string, options: any) => {
                 if (!(await this.isLcuInitialized())) {
@@ -28,7 +29,7 @@ export class DocumentationCommandService extends BaseCommandService {
                         module: options.module || 'app.module.ts',
                         path: options.path || 'docs',
                         projectName: options.project || 'demo',
-                        template: options.template || null
+                        initWith: options.initWith || null
                     };
 
                     // context.name = await this.ensureName(context.name); // TODO: Do we need a name for this?
@@ -44,11 +45,12 @@ export class DocumentationCommandService extends BaseCommandService {
 
                         context = await this.mergeObjects(context, answers);
 
-                        answers = await this.processTemplateInquiries(templateRepoPath, context); // TODO: Add more templates!
+                        // answers = await this.processTemplateInquiries(templateRepoPath, context); // TODO: Add more templates!
 
-                        context = await this.mergeObjects(context, answers);
+                        // context = await this.mergeObjects(context, answers);
 
-                        await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
+                        // await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
+                        await this.processTemplateCommands(templateRepoPath, context);
 
                         this.Ora.succeed(`Completed documenation setup in the project: ${context.projectName}.`);
                         

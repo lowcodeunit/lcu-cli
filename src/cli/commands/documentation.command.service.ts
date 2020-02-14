@@ -14,6 +14,9 @@ export class DocumentationCommandService extends BaseCommandService {
             .description('Initialize a basic documentation structure with the LCU-Documentation library.')
             .option('-p|--project <project>', 'The project to add the documentation files to.')
             .option('-m|--module <module>', 'The module within a project to add the documentation module to.')
+            .option('-iw|--initWith [initWith]', 'The initialization type to specify a set of docs to create.')
+            .option('-ic|--includeComponent [includeComponent]', 'Whether or not to include component files containing documentation setup code.')
+            .option('-ir|--includeRouting [includeRouting]', 'Whether or not to include a route for the newly created component.')
             .option('--path <path>', 'The path within a project to add the documentation files to.')
             .action(async (name: string, options: any) => {
                 if (!(await this.isLcuInitialized())) {
@@ -28,10 +31,10 @@ export class DocumentationCommandService extends BaseCommandService {
                         module: options.module || 'app.module.ts',
                         path: options.path || 'docs',
                         projectName: options.project || 'demo',
-                        template: options.template || null
+                        initWith: options.initWith || null,
+                        includeComponent: options.includeComponent || false,
+                        includeRouting: options.includeRouting || false
                     };
-
-                    // context.name = await this.ensureName(context.name); // TODO: Do we need a name for this?
 
                     context.projectName = await this.ensureInquired(context.projectName, 'project');
 
@@ -43,14 +46,9 @@ export class DocumentationCommandService extends BaseCommandService {
                         let answers = await this.inquir(templateRepoPath);
 
                         context = await this.mergeObjects(context, answers);
+                        await this.processTemplateCommands(templateRepoPath, context);
 
-                        answers = await this.processTemplateInquiries(templateRepoPath, context); // TODO: Add more templates!
-
-                        context = await this.mergeObjects(context, answers);
-
-                        await this.processTemplateCommands(this.pathJoin(templateRepoPath, context.template), context);
-
-                        this.Ora.succeed(`Completed documenation setup in the project: ${context.projectName}.`);
+                        this.Ora.succeed(`Completed documentation setup in the project: ${context.projectName}.`);
                         
                     } catch (err) {
                         this.Ora.fail(`Issue establishing documentation: \r\n${err}`);
@@ -59,37 +57,6 @@ export class DocumentationCommandService extends BaseCommandService {
                     }
                 }
             });
-    }
-
-    protected async processTemplateInquiries(templateRepoPath: string, context: any) {
-        let cliConfig = await this.loadCLIConfig();
-
-        let questions = [];
-
-        if (!context.template) {
-            questions.push({
-                type: 'list',
-                name: 'template',
-                message: `Choose ${cliConfig.Documents.Title}:`,
-                choices: cliConfig.Documents.Options
-            });
-        }
-
-        let setupQuestions: any = await this.loadTemplateInquirerQuestions(templateRepoPath);
-
-        if (setupQuestions && setupQuestions.length > 0) {
-            questions.push(...setupQuestions);
-        }
-
-        let answers: any = await this.inquir(questions);
-
-        let repoTemplateTempPath = this.pathJoin(templateRepoPath, answers.template);
-
-        let templateAnswers: any = await this.inquir(repoTemplateTempPath);
-
-        answers = await this.mergeObjects(answers, templateAnswers);
-
-        return answers;
     }
 
 }

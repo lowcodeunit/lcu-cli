@@ -5,7 +5,6 @@ import { ICommandService } from './cli/commands/ICommandService';
 import { InitializeCommandService } from './cli/commands/initialize.command.service';
 import { version } from '../package.json';
 import { DAFCommandService } from './cli/commands/daf.command.service';
-import { ElementCommandService } from './cli/commands/element.command.service';
 import { ProjectCommandService } from './cli/commands/project.command.service';
 import { ServeCommandService } from './cli/commands/serve.command.service';
 import { UpdateCommandService } from './cli/commands/update.command.service';
@@ -22,8 +21,6 @@ var logger = new Logger();
     commands.push(new InitializeCommandService());
 
     commands.push(new ProjectCommandService());
-
-    commands.push(new ElementCommandService());
 
     commands.push(new SolutionCommandService());
 

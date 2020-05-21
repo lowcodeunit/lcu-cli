@@ -6,7 +6,6 @@ import { InitializeCommandService } from './cli/commands/initialize.command.serv
 import { version } from '../package.json';
 import { DAFCommandService } from './cli/commands/daf.command.service';
 import { ProjectCommandService } from './cli/commands/project.command.service';
-import { ServeCommandService } from './cli/commands/serve.command.service';
 import { UpdateCommandService } from './cli/commands/update.command.service';
 import { SolutionCommandService } from './cli/commands/solution.command.service';
 import { DocumentationCommandService } from './cli/commands/documentation.command.service';
@@ -24,7 +23,7 @@ var logger = new Logger();
 
     commands.push(new SolutionCommandService());
 
-    commands.push(new ServeCommandService());
+    // commands.push(new ServeCommandService()); // TODO: 'serve' is not ready for release yet
 
     commands.push(new UpdateCommandService());
 

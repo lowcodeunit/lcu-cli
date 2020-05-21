@@ -4,7 +4,6 @@ import { LowCodeUnityCLIService } from './cli/lcu-cli.service';
 import { ICommandService } from './cli/commands/ICommandService';
 import { InitializeCommandService } from './cli/commands/initialize.command.service';
 import { version } from '../package.json';
-import { DAFCommandService } from './cli/commands/daf.command.service';
 import { ProjectCommandService } from './cli/commands/project.command.service';
 import { UpdateCommandService } from './cli/commands/update.command.service';
 import { SolutionCommandService } from './cli/commands/solution.command.service';
@@ -26,8 +25,6 @@ var logger = new Logger();
     // commands.push(new ServeCommandService()); // TODO: 'serve' is not ready for release yet
 
     commands.push(new UpdateCommandService());
-
-    commands.push(new DAFCommandService());
 
     commands.push(new DocumentationCommandService());
 

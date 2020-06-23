@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Logger } from './logging/logger';
-import { LowCodeUnityCLIService } from './cli/lcu-cli.service';
+import { LowCodeUnitCLIService } from './cli/lcu-cli.service';
 import { ICommandService } from './cli/commands/ICommandService';
 import { InitializeCommandService } from './cli/commands/initialize.command.service';
 import { version } from '../package.json';
@@ -12,7 +12,7 @@ import { DocumentationCommandService } from './cli/commands/documentation.comman
 var logger = new Logger();
 
 (async () => {
-    var cli = new LowCodeUnityCLIService(version, logger);
+    var cli = new LowCodeUnitCLIService(version, logger);
 
     var commands: ICommandService[] = [];
 

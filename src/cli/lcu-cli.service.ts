@@ -2,7 +2,7 @@ import { Logger } from '../logging/logger';
 import commander, { Command } from 'commander'
 import { ICommandService } from './commands/ICommandService';
 
-export class LowCodeUnityCLIService {
+export class LowCodeUnitCLIService {
     //  Fields
     protected program: Command;
 

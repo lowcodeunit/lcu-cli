@@ -8,6 +8,7 @@ import { ProjectCommandService } from './cli/commands/project.command.service';
 import { UpdateCommandService } from './cli/commands/update.command.service';
 import { SolutionCommandService } from './cli/commands/solution.command.service';
 import { DocumentationCommandService } from './cli/commands/documentation.command.service';
+import { StarterCommandService } from './cli/commands/starter.command.service';
 
 var logger = new Logger();
 
@@ -21,6 +22,8 @@ var logger = new Logger();
     commands.push(new ProjectCommandService());
 
     commands.push(new SolutionCommandService());
+
+    commands.push(new StarterCommandService());
 
     // commands.push(new ServeCommandService()); // TODO: 'serve' is not ready for release yet
 

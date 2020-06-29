@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Logger } from './logging/logger';
-import { LowCodeUnityCLIService } from './cli/lcu-cli.service';
+import { LowCodeUnitCLIService } from './cli/lcu-cli.service';
 import { ICommandService } from './cli/commands/ICommandService';
 import { InitializeCommandService } from './cli/commands/initialize.command.service';
 import { version } from '../package.json';
@@ -8,11 +8,12 @@ import { ProjectCommandService } from './cli/commands/project.command.service';
 import { UpdateCommandService } from './cli/commands/update.command.service';
 import { SolutionCommandService } from './cli/commands/solution.command.service';
 import { DocumentationCommandService } from './cli/commands/documentation.command.service';
+import { StarterCommandService } from './cli/commands/starter.command.service';
 
 var logger = new Logger();
 
 (async () => {
-    var cli = new LowCodeUnityCLIService(version, logger);
+    var cli = new LowCodeUnitCLIService(version, logger);
 
     var commands: ICommandService[] = [];
 
@@ -21,6 +22,8 @@ var logger = new Logger();
     commands.push(new ProjectCommandService());
 
     commands.push(new SolutionCommandService());
+
+    commands.push(new StarterCommandService());
 
     // commands.push(new ServeCommandService()); // TODO: 'serve' is not ready for release yet
 

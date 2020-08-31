@@ -37,7 +37,7 @@
     "chalk": "^4.1.0",
     "chokidar": "^3.4.2",
     "clear": "^0.1.0",
-    "commander": "^2.19.0",
+    "commander": "^6.1.0",
     "concurrently": "^4.1.0",
     "core-js": "^2.5.7",
     "download-git-repo": "^1.1.0",

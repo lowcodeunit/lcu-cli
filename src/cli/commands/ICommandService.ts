@@ -29,7 +29,7 @@ export interface LCUOra {
 
     color: LCUColor;
 
-    frameIndex: number;
+    // frameIndex: number;
 }
 
 export interface LCUPersistOptions {

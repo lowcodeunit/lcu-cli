@@ -29,7 +29,9 @@ export interface LCUOra {
 
     color: LCUColor;
 
-    // frameIndex: number;
+    // making this optional, because it doesn't seem to exist,
+    //but I'm not sure if it's used further down the line - Shannon
+    frameIndex?: number;
 }
 
 export interface LCUPersistOptions {

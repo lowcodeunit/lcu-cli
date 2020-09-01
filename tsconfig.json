@@ -10,7 +10,6 @@
     "resolveJsonModule": true,
     "strict": false,
     "strictNullChecks": false,
-    // "noImplicitAny": false,
     "typeRoots": [
       "./@types", 
       "./node_modules/@types"

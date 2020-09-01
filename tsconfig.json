@@ -7,10 +7,9 @@
     "outDir": "./dist",
     "sourceMap": false,
     "esModuleInterop": true,
-    // "resolveJsonModule": true,
+    "resolveJsonModule": true,
     "strict": false,
     "strictNullChecks": false,
-    "enableIvy": false,
     // "noImplicitAny": false,
     "typeRoots": [
       "./@types", 

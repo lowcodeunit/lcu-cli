@@ -6,7 +6,6 @@
     "outDir": "./dist",
     "sourceMap": false,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
     "strict": false,
     "strictNullChecks": false,
     // "noImplicitAny": false,

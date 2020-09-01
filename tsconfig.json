@@ -9,6 +9,7 @@
     // "resolveJsonModule": true,
     "strict": false,
     "strictNullChecks": false,
+    "enableIvy": false,
     // "noImplicitAny": false,
     "typeRoots": [
       "./@types", 

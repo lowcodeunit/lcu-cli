@@ -12,7 +12,7 @@
     "create": "npm run build && npm run test",
     "build": "tsc -p .",
     "build:dev": "tsc -w",
-    "local-build-for-testing": "tsc -p tsconfig.json --watch",
+    "build-for-local-testing": "tsc -p tsconfig.json --watch",
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
     "start": "nodemon --exec ts-node -- ./src/lcu-cli.ts",
     "test": "jest --coverage"
@@ -60,7 +60,7 @@
     "@types/core-js": "^2.5.0",
     "@types/figlet": "^1.2.0",
     "@types/inquirer": "0.0.43",
-    "@types/node": "^10.12.30",
+    "@types/node": "^14.10.0",
     "@types/ora": "^3.2.0",
     "nodemon": "^2.0.4",
     "ts-node": "^9.0.0",

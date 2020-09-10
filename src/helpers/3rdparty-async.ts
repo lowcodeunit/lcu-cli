@@ -6,7 +6,7 @@ export class AsyncHelpers {
         return new Promise<void>((resolve, reject) => {
             if (host && !repo.startsWith(host))
                 repo = `${host}:${repo}`;
-            
+            // console.log('SHANNON - download Git ' + repo);
             download(repo, downloadToPath, async (err) => {
                 if (err) {
                     reject(err);

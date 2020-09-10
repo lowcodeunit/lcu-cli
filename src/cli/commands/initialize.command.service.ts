@@ -44,6 +44,7 @@ export class InitializeCommandService extends BaseCommandService {
                         context.workspace = await this.ensureInquired(context.workspace, 'workspace');
     
                         var repoTempPath = this.pathJoin(this.tempFiles, 'repos', context.repo);
+                        // var repoTempPath = this.pathJoin(this.tempFiles, 'repos', 'shannon-test');
 
                         await this.establishTemplatesRepo(repoTempPath, context.repo);
 
@@ -68,6 +69,7 @@ export class InitializeCommandService extends BaseCommandService {
     //  Helpers
     protected async establishTemplatesRepo(repoTempPath: string, repo: string) {
         return new Promise<{}>(async (resolve, reject) => {
+            console.log('SHANNON ' + repo);
             var ora = this.Ora.start(`Loading Templates Repository '${repo}'`);
 
             await AsyncHelpers.rimraf(repoTempPath).catch(err => {

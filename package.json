@@ -12,6 +12,7 @@
     "create": "npm run build && npm run test",
     "build": "tsc -p .",
     "build:dev": "tsc -w",
+    "build-for-local-testing": "tsc -p tsconfig.json --watch",
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
     "start": "nodemon --exec ts-node -- ./src/lcu-cli.ts",
     "test": "jest --coverage"
@@ -26,7 +27,7 @@
     "CLI"
   ],
   "author": "Michael Gearhardt",
-  "license": "MIT",
+  "license": "Apache",
   "bugs": {
     "url": "https://github.com/lowcodeunit/lcu-cli/issues"
   },

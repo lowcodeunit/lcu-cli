@@ -15,6 +15,13 @@ export class InitializeCommandService extends BaseCommandService {
 
     //  API Methods
     public async Setup(program: Command): Promise<Command> {
+        /**
+         * For local testing
+         * 
+         * Can pull repo from a feature branch, for testing or whatever like -
+         * 
+         * default: lowcodeunit-devkit/lcu-cli-templates-core#feature\/8193-angular-10 - shannon
+         */
         return program
             .command('initialize')
             .alias('init')
@@ -44,7 +51,15 @@ export class InitializeCommandService extends BaseCommandService {
                         context.workspace = await this.ensureInquired(context.workspace, 'workspace');
     
                         var repoTempPath = this.pathJoin(this.tempFiles, 'repos', context.repo);
-                        // var repoTempPath = this.pathJoin(this.tempFiles, 'repos', 'shannon-test');
+
+                        /**
+                         * For Local testing
+                         * 
+                         * Can pull lcu-cli-templates-core for a local test from smart-matrix like, where 
+                         * shannon-test is a folder containing commander files App, LCU, Library, Momentum, etc.
+                         * 
+                         * var repoTempPath = this.pathJoin(this.tempFiles, 'repos', 'shannon-test');
+                         */
 
                         await this.establishTemplatesRepo(repoTempPath, context.repo);
 
